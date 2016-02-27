@@ -1,0 +1,60 @@
+#include <iostream>
+#include "rubiks.h++"
+
+using namespace PRETETSKY;
+
+int main()
+{
+    char threadTestStr[5];
+    rubiks r1;
+
+    std::cout << " compile success" << std::endl;
+    r1.threadTest();
+    r1.copyThreadTestStr(threadTestStr);
+    std::cout << "threadtest: " << threadTestStr << std::endl;
+
+    //r1.rotUcount();
+    //r1.rotUclock();
+    //r1.rotUtwice();
+    //r1.rotUtwice();
+    //r1.rotDcount();
+    //r1.rotDclock();
+    //r1.rotDtwice();
+    //r1.rotDtwice();
+    //r1.rotLcount();
+    //r1.rotLclock();
+    //r1.rotLtwice();
+    //r1.rotLtwice();
+    //r1.rotRcount();
+    //r1.rotRclock();
+    //r1.rotRtwice();
+    //r1.rotRtwice();
+    //r1.rotFcount();
+    //r1.rotFclock();
+    //r1.rotFtwice();
+    //r1.rotFtwice();
+    //r1.rotBcount();
+    //r1.rotBclock();
+    //r1.rotBtwice();
+    //r1.rotBtwice();
+
+    //void (rubiks::*funcPtr)(void);
+    //funcPtr = &rubiks::print;
+    //(r1.*funcPtr)();
+
+    //r1.funcTest();
+    //r1.print();
+    
+
+    r1.rotDcount();
+    //r1.rotLtwice();
+    //r1.rotDclock();
+    //r1.rotBclock();
+    r1.print();
+    r1.solveComplete(1);
+    r1.print();
+    r1.printRecord();
+
+
+    return EXIT_SUCCESS;
+}

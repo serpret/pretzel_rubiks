@@ -1,0 +1,16 @@
+CC=g++
+CFLAGS= -c -pthread -std=c++11 
+EXECUTABLE=rubikSolve
+SOURCES=main.cpp rubiks.cpp
+OBJECTS=$(SOURCES: .cpp=.o)
+DEPS=rubiks.h++
+
+all: $(SOURCES) $(EXECUTABLE)
+
+$(EXECUTABLE): $(OBJECTS)
+	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
+
+%.o: %.cpp $(DEPS)
+	$(CC) $(CFLAGS) $<
+
+

@@ -1,0 +1,211 @@
+#include "rubiks.h++"
+#include <thread>
+#include <iostream> //used for printing the cube
+
+namespace PRETETSKY
+{
+      
+    //==================================================================
+    //==================================================================
+    void rubiks::print()
+    {
+        
+    std::cout << "            "<< square[34] << "                                         "<< square[30] << "            "<< std::endl << "                                                                       "<< std::endl << "      "<< square[35] << "    "<< square[33] << "                                         "<< square[31] << "    "<< square[29] << "      "<< std::endl << "                                                                       "<< std::endl<< square[36] << "          "<< square[32] << "                                         "<< square[24] << "          "<< square[28] << " "<< std::endl << "                                                                       "<< std::endl<< square[37] << "    "<< square[39] << "                        "<< square[4] << "                            "<< square[25] << "    "<< square[27]<< std::endl << "                                                                       "<< std::endl<< square[38] << "                        "<< square[3] << "           "<< square[5] << "                            "<< square[26] << " "<< std::endl << "                     "<< std::endl << "                    "<< square[2] << "                       "<< square[6] << "                     "<< std::endl << "                  "<< std::endl << "                          "<< square[1] << "           "<< square[7]<< std::endl << "               "<< square[22] << "                              "<< square[10]<< std::endl << "                                "<< square[0] << "                   "<< std::endl << "               "<< square[21] << "    "<< square[23] << "                   "<< square[9] << "    "<< square[11] << "  "<< std::endl<< std::endl << "               "<< square[20] << "          "<< square[16] << "       "<< square[8] << "          "<< square[12] << "   "<< std::endl << "        "<< std::endl << "                     "<< square[19] << "    "<< square[17] << "      "<< square[15] << "    "<< square[13]<< std::endl<< std::endl << "                           "<< square[18] << "      "<< square[14]<< std::endl<< std::endl << "                                                          "<< std::endl << "                                                          "<< std::endl << "                                                          "<< std::endl << "                               "<< square[40] << "                                       "<< std::endl << "                                                                        "<< std::endl << "                         "<< square[41] << "          "<< square[47] << "                                   "<< std::endl << "                                                                            "<< std::endl << "                   "<< square[42] << "                      "<< square[46] << "                             "<< std::endl << "                                                                           "<< std::endl << "                         "<< square[43] << "          "<< square[45] << "                                   "<< std::endl << "                                                                            "<< std::endl << "                               "<< square[44] << "        " << std::endl;
+    } 
+    //==================================================================
+    //==================================================================
+
+    //==================================================================
+    //==================================================================
+    rubiks::rubiks()
+    {
+        for( int i = 0; i < NUM_SQUARES; ++i)
+        {
+            square[i] = i;
+        } 
+    } 
+    //==================================================================
+    //==================================================================
+         
+    //==================================================================
+    // DEBUGGING =======================================================
+    void rubiks::threadTest()
+    {
+        std::thread t1(&rubiks::threadTestChild, this);
+        t1.join();
+        
+    }
+    //==================================================================
+    //==================================================================
+
+    //==================================================================
+    // DEBUGGING =======================================================
+    void rubiks::threadTestChild()
+    {
+        threadTestStr[0] = 'B';
+        threadTestStr[1] = 'E';
+        threadTestStr[2] = 'E';
+        threadTestStr[3] = 'F';
+        threadTestStr[4] = '\0';
+    }
+    //==================================================================
+    //==================================================================
+
+    //==================================================================
+    // DEBUGGING =======================================================
+    void rubiks::copyThreadTestStr(char* copyHere)
+    {
+        for(int i = 0; i< 5; ++i)
+        {
+            copyHere[i] = threadTestStr[i];
+        }
+    }
+    //==================================================================
+    //==================================================================
+
+    
+    //==================================================================
+    //==================================================================
+    void rubiks::rotUcount()
+    {
+        int temp1;
+        int temp2;
+        int temp3;
+        int temp4;
+        int temp5;
+
+        //rotate face corners
+        temp1       = square[0];
+        square[0]   = square[2];
+        square[2]   = square[4];
+        square[4]   = square[6];
+        square[6]   = temp1;
+    
+        //rotate face edges
+        temp2       = square[1];
+        square[1]   = square[3];
+        square[3]   = square[5];
+        square[5]   = square[7];
+        square[7]   = temp2;
+
+        //rotate adjascent face northwest corners
+        temp3       = square[ 8];
+        square[ 8]  = square[22];
+        square[22]  = square[34];
+        square[34]  = square[28];
+        square[28]  = temp3;
+
+        //rotate adjascent face north edges
+        temp4       = square[23];
+        square[23]  = square[35];
+        square[35]  = square[29];
+        square[29]  = square[ 9];
+        square[ 9]  = temp4;
+
+        //rotate adjascent face northeast corners
+        temp5       = square[16];
+        square[16]  = square[36];
+        square[36]  = square[30];
+        square[30]  = square[10];
+        square[10]  = temp5;
+    }
+    
+    ////==================================================================
+    ////==================================================================
+    //void rubiks::rotUcount()
+    //{
+    //    Color temp1;
+    //    Color temp2;
+    //    Color temp3;
+    //    Color temp4;
+    //    Color temp5;
+    //    
+    //    //rotate the face corners
+    //    temp1 = square[upFace][backRightSq];
+    //    square[upFace][backRightSq]  = square[upFace][frontRightSq];
+    //    square[upFace][frontRightSq] = square[upFace][frontLeftSq];
+    //    square[upFace][frontLeftSq]  = square[upFace][backLeftSq];
+    //    square[upFace][backLeftSq]   = temp1;
+
+    //    //rotate the face edges
+    //    temp2 = square[upFace][backSq];
+    //    square[upFace][backSq]  = square[upFace][rightSq];
+    //    square[upFace][rightSq] = square[upFace][frontSq];
+    //    square[upFace][frontSq] = square[upFace][leftSq];
+    //    square[upFace][leftSq]  = temp2;
+
+    //    //rotate the adjascent faces' north west corners
+    //    temp3 = square[backFace][northWest];
+    //    square[backFace][northWest]  = square[rightFace][northWest];
+    //    square[rightFace][northWest] = square[frontFace][northWest];
+    //    square[frontFace][northWest] = square[leftFace][northWest];
+    //    square[leftFace][northWest]  = temp3;
+
+    //    //rotate the adjascent faces' north east corners
+    //    temp4 = square[backFace][northEast];
+    //    square[backFace][northEast]  = square[rightFace][northEast];
+    //    square[rightFace][northEast] = square[frontFace][northEast];
+    //    square[frontFace][northEast] = square[leftFace][northEast];
+    //    square[leftFace][northEast]  = temp4;
+
+    //    //rotate the adjascent faces' edges
+    //    temp5 = square[backFace][north];
+    //    square[backFace][north]  = square[rightFace][north];
+    //    square[rightFace][north] = square[frontFace][north];
+    //    square[frontFace][north] = square[leftFace][north];
+    //    square[leftFace][north]  = temp5;
+
+    //}
+    ////==================================================================
+    ////==================================================================
+
+
+    ////==================================================================
+    ////==================================================================
+    //void rubiks::rotUclock()
+    //{
+    //    Color temp1;
+    //    Color temp2;
+    //    Color temp3;
+    //    Color temp4;
+    //    Color temp5;
+    //    
+    //    //rotate the face corners
+    //    temp1 = square[upFace][backRightSq];
+    //    square[upFace][backRightSq]  = square[upFace][backLeftSq];
+    //    square[upFace][backLeftSq]   = square[upFace][frontLeftSq];
+    //    square[upFace][frontLeftSq]  = square[upFace][frontRightSq]; 
+    //    square[upFace][frontRightSq] = temp1;
+
+    //    //rotate the face edges
+    //    temp2 = square[upFace][backSq];
+    //    square[upFace][backSq]  = square[upFace][leftSq];
+    //    square[upFace][leftSq]  = square[upFace][frontSq];
+    //    square[upFace][frontSq] = square[upFace][rightSq]; 
+    //    square[upFace][rightSq] = temp2; 
+
+    //    //rotate the adjascent faces' north west corners
+    //    temp3 = square[backFace][northWest];
+    //    square[backFace][northWest]  = square[leftFace][northWest];
+    //    square[leftFace][northWest]  = square[frontFace][northWest];
+    //    square[frontFace][northWest] = square[rightFace][northWest];
+    //    square[rightFace][northWest] = temp3;
+
+    //    //rotate the adjascent faces' north east corners
+    //    temp4 = square[backFace][northEast];
+    //    square[backFace][northEast]  = square[leftFace][northEast];
+    //    square[leftFace][northEast]  = square[frontFace][northEast];
+    //    square[frontFace][northEast] = square[rightFace][northEast];
+    //    square[rightFace][northEast] = temp4;
+
+    //    //rotate the adjascent faces' edges
+    //    temp5 = square[backFace][north];
+    //    square[backFace][north]  = square[leftFace][north];
+    //    square[leftFace][north]  = square[frontFace][north];
+    //    square[frontFace][north] = square[rightFace][north];
+    //    square[rightFace][north] = temp5;
+
+    //}
+    ////==================================================================
+    ////==================================================================
+}
