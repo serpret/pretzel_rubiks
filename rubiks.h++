@@ -43,6 +43,49 @@
 //                               44        
 //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
+
+// two structures for edges and corners
+//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+//                                2         
+//                                                                       
+//                          2           1  
+//                     
+//                    3          up           1                     
+//                  
+//                          3           0 
+//                    7                       5
+//                                0                   
+//
+//                    7                       5
+//                                4 
+//       front             11            8              right
+//
+//                                4                                      
+//                                                          
+//                                                          
+//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+// single structure for all cubes
+//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+//                                4         
+//                                                                       
+//                          5           3  
+//                     
+//                    6          up           2                     
+//                  
+//                          7           1 
+//                   11                       9 
+//                                0                   
+//
+//                   18                      14  
+//                                8 
+//       front            19            13              right
+//
+//                               12                                      
+//                                                          
+//                                                          
+//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
 //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 //  Author: Sergy Pretetsky
 
@@ -138,6 +181,9 @@ namespace PRETZEL
             //rubiks cube has 48 squares (although only
             // 20 cubes, this class operates on squares)
             static const int NUM_SQ = 48;
+            static const int NUM_CORNER_CUBES = 8;
+            static const int NUM_EDGE_CUBES = 12;
+            static const int NUM_CUBES = 20;
 
             //rubiks cube has 6 faces
             enum Face { up      = 0,
@@ -149,6 +195,12 @@ namespace PRETZEL
                         numFaces,
                         emptyFace      };
 
+            const Face nextFaceYrotCount[numFaces] = { up, down, front, back,
+                                                    right, left};
+
+            const Face nextFaceXrotCount[numFaces] = {front, back, left, right, 
+                                                    down, up};
+
             //each face can be rotated 90 degrees counter-clockwise or
             //clockwise, or 180 degrees which we call twice.
             enum Rot { count = 0,
@@ -156,6 +208,10 @@ namespace PRETZEL
                            clock = 2,
                            numRots,
                            emptyRot  };
+
+            //Face nextFaceYrotCount[numFaces];
+
+            
 
         typedef int SqType;
         typedef std::vector<std::pair< Face, Rot>> RotRecordType;
@@ -170,6 +226,15 @@ namespace PRETZEL
             int findSquare(SqType);
 
             void rotUcount();
+
+            void rotCubeNumsToRight( int, int, int, int); //testing
+            void rotCornerNumsToRight( int, int, int, int); //testing
+            void rotEdgeNumsToRight( int, int, int, int);   //testing          
+            void rotUcountCubes();                      //testing
+            void rotRcountCubes();                      //testing
+            void rotUcountCubes2();                      //testing
+            void rotRcountCubes2();                      //testing
+
             void rotUtwice();
             void rotUclock();
 
@@ -213,7 +278,18 @@ namespace PRETZEL
             //bool isLastRotInStep(); //helper function for solveBreadthRecursion
             //void moveToNextStep();  //helper function for solveBreadthRecursion
             //PeekCornerPos convertSqPosToPeekCorner(int); //helper
- 
+
+            struct Cube{
+                int cubeNum;
+                Face orient;
+            } ;
+
+            Cube corners[NUM_CORNER_CUBES];
+            Cube edges[NUM_EDGE_CUBES];
+
+            int cubeNum[NUM_CUBES];
+            Face cubeOrient[NUM_CUBES];
+
             SqType square[NUM_SQ];
 
             RotRecordType rotRecord;

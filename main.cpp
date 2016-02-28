@@ -8,63 +8,71 @@ int main()
 {
     char threadTestStr[5];
     rubiks r1;
+    rubiks::SqType j; 
+    int sum{0};
 
-    // sanity check, the series of rotations below should
-    // leave me with the same cube i started with
-    //r1.rotUcount();
-    //r1.rotUclock();
-    //r1.rotUtwice();
-    //r1.rotUtwice();
-    //r1.rotDcount();
-    //r1.rotDclock();
-    //r1.rotDtwice();
-    //r1.rotDtwice();
-    //r1.rotLcount();
-    //r1.rotLclock();
-    //r1.rotLtwice();
-    //r1.rotLtwice();
-    //r1.rotRcount();
-    //r1.rotRclock();
-    //r1.rotRtwice();
-    //r1.rotRtwice();
-    //r1.rotFcount();
-    //r1.rotFclock();
-    //r1.rotFtwice();
-    //r1.rotFtwice();
-    //r1.rotBcount();
-    //r1.rotBclock();
-    //r1.rotBtwice();
-    //r1.rotBtwice();
+    std::cout << "Input a random number between 0 and 47" << std::endl;
+    std::cin >> j;
 
 
-    // more testing
-    r1.rotDcount();
-    r1.rotLtwice();
-    r1.rotDclock();
-    r1.rotBclock();
-    r1.rotRclock();
-    //r1.rotUtwice();
-    //r1.rotFcount();
-    //r1.rotUtwice();
-    //r1.addRotStep( tempFace, tempType);
-    //tempFace = PRETETSKY::front;
-    //tempType = PRETETSKY::clock;
-    //r1.addRotStep( tempFace, tempType);
-    //r1.print();
-    r1.print();
     //r1.scramble(40);
+
+    //r1.print();
     
 
     auto startTime = std::chrono::high_resolution_clock::now();
-    //r1.solveComplete(7);
 
-    
-    //for(int i = 1; !r1.solveBreadthRecursion( &rubiks::isMatchComplete, i); ++i){
+    int numIterations = 10000000;
+    //for( int i = 0; i < numIterations; ++i)
+    //{
+    //    r1.rotUcount();
+    //    r1.rotRcount();
+    //    if( sum & 0x1){
+    //        r1.rotUcount();
+    //        r1.rotUcount();
+    //    } else {
+    //        r1.rotUcount();
+    //    }
+    //    r1.rotRcount();
 
-    //    std::cout << "Step " << i << " no solutions found" << std::endl;
+    //    //sum = sum + r1.findSquare(j);
+    //    
     //}
 
 
+    //for( int i = 0; i < numIterations; ++i)
+    //{
+    //    r1.rotUcountCubes();
+    //    r1.rotRcountCubes();
+    //    if( sum & 0x1){
+    //        r1.rotUcountCubes();
+    //        r1.rotUcountCubes();
+    //    } else {
+    //        r1.rotUcountCubes();
+    //    }
+    //    r1.rotRcountCubes();
+
+    //    //sum = sum + r1.findSquare(j);
+    //    
+    //}
+
+
+    for( int i = 0; i < numIterations; ++i)
+    {
+        r1.rotUcountCubes2();
+        r1.rotRcountCubes2();
+        if( sum & 0x1){
+            r1.rotUcountCubes2();
+            r1.rotUcountCubes2();
+        } else {
+            r1.rotUcountCubes2();
+        }
+        r1.rotRcountCubes2();
+
+        //sum = sum + r1.findSquare(j);
+        
+    }
+    //r1.rotUcountCubes();
     
     auto elapsedTime = std::chrono::high_resolution_clock::now() - startTime;
     long long elapsedMilliSeconds = std::chrono::duration_cast<std::chrono::milliseconds>(elapsedTime).count();
@@ -72,11 +80,7 @@ int main()
 
 
     r1.print();
-    //r1.print();
-    r1.printRecord();
 
-
-    //r1.scramble(5);
 
     return EXIT_SUCCESS;
 }
