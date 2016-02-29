@@ -251,7 +251,15 @@ namespace PRETZEL
             else if(i < 12) cubeOrient[i] = left;
             else cubeOrient[i] = down;
         }
-    
+        //==============================================
+        for(int i = 0; i < NUM_CUBES; ++i)
+        {
+            allCubes[i].cubeNum = i;
+            if (i < 8)      allCubes[i].orient = up;
+            else if(i < 10) allCubes[i].orient = right;
+            else if(i < 12) allCubes[i].orient = left;
+            else allCubes[i].orient = down;
+        }
    
     } 
     //==================================================================
@@ -276,7 +284,24 @@ namespace PRETZEL
     }
     //==================================================================
     //==================================================================
-  
+ 
+ 
+    //==================================================================
+    //==================================================================
+    void rubiks::rotCubeNumsToRight3( int a, int b, int c, int d)
+    {
+        int temp = allCubes[d].cubeNum;
+            
+        allCubes[d].cubeNum = allCubes[c].cubeNum;
+        allCubes[c].cubeNum = allCubes[b].cubeNum;
+        allCubes[b].cubeNum = allCubes[a].cubeNum;
+        allCubes[a].cubeNum = temp;
+        
+    }
+    //==================================================================
+    //==================================================================
+
+
     //==================================================================
     //==================================================================
     void rubiks::rotCubeNumsToRight( int a, int b, int c, int d)
@@ -291,6 +316,7 @@ namespace PRETZEL
     }
     //==================================================================
     //==================================================================
+
 
     //==================================================================
     //==================================================================
@@ -324,6 +350,136 @@ namespace PRETZEL
     //==================================================================
 
     
+    //==================================================================
+    //==================================================================
+    void rubiks::rotUcountCubes3()
+    {
+
+        //test function
+        rotCubeNumsToRight3(0,2,4,6);
+        rotCubeNumsToRight3(1,3,5,7);
+
+        Face tempCorner = allCubes[0].orient;
+        Face tempEdge = allCubes[1].orient;
+
+        // left -> front -> right -> back -> ...
+        // contents of: 3  ->  0  ->  1  ->  2
+        //rotation corners
+
+        //front edge
+        //if(edges[3].orient == front) edges[0].orient = right;
+        //edges[0].orient = nextFaceYrotCount[ edges[3].orient];
+        if(allCubes[7].orient == front) allCubes[1].orient = right;
+
+        //front left corner
+        //if(corners[3].orient == left) corners[0].orient = front;
+        //else if(corners[3].orient == front) corners[0].orient = right;
+        //corners[0].orient = nextFaceYrotCount[ corners[3].orient ];
+        allCubes[0].orient = nextFaceYrotCount[ allCubes[6].orient ];
+
+        //left edge
+        //if(edges[2].orient == left) edges[3].orient = front;
+        //edges[3].orient = nextFaceYrotCount[ edges[2].orient ];
+        if(allCubes[5].orient == left) allCubes[7].orient = front;
+
+        //back left corner
+        //if(corners[2].orient == left) corners[3].orient = front;
+        //else if(corners[2].orient == back) corners[3].orient = left;
+        //corners[3].orient = nextFaceYrotCount[ corners[2].orient ];
+        allCubes[6].orient = nextFaceYrotCount[ allCubes[4].orient ];
+
+        //back edge
+        //if(edges[1].orient == back) edges[2].orient = left;
+        //edges[2].orient = nextFaceYrotCount[ edges[1].orient ];
+        if(allCubes[3].orient == back) allCubes[5].orient = left;
+       
+        //back right corner 
+        //if(corners[1].orient == right) corners[2].orient = back;
+        //else if(corners[1].orient == back) corners[2].orient = left;
+        //corners[2].orient = nextFaceYrotCount[ corners[1].orient ];
+        allCubes[4].orient = nextFaceYrotCount[ allCubes[2].orient ];
+    
+        //right edge
+        //if(tempEdge == right) edges[1].orient = back;
+        //edges[1].orient = nextFaceYrotCount[ tempEdge ];
+        if(tempEdge == right) allCubes[3].orient = back;
+    
+        //front right corner
+        //if(tempCorner == right) corners[1].orient = back;
+        //else if(tempCorner == front) corners[1].orient = right;
+        //corners[1].orient = nextFaceYrotCount[ tempCorner];
+        allCubes[0].orient = nextFaceYrotCount[ tempCorner ];
+
+        
+    } 
+    //==================================================================
+    //==================================================================
+
+
+    //==================================================================
+    //==================================================================
+    void rubiks::rotRcountCubes3()
+    {
+
+        //test function
+    
+        rotCubeNumsToRight3(0, 12, 14, 2);
+        rotCubeNumsToRight3(8, 13, 9, 1);
+
+        Face tempCorner = allCubes[0].orient;
+        Face tempEdge = allCubes[1].orient;
+
+        // up -> front -> down -> back 
+        //rotation corners
+
+        //up back corner
+        //if(corners[1].orient == up) corners[0].orient = front;
+        //else if(corners[1].orient == back) corners[0].orient = up;
+        allCubes[0].orient = nextFaceXrotCount[ allCubes[2].orient];
+
+        //back edge 
+        //if(edges[5].orient == back) edges[0].orient = up;
+        //edges[0].orient = nextFaceXrotCount[ edges[5].orient];
+        if(allCubes[9].orient == back) allCubes[1].orient = up;
+
+        //back down corner
+        //if(corners[5].orient == down) corners[1].orient = back;
+        //else if(corners[5].orient == back) corners[1].orient = up;
+        //corners[1].orient = nextFaceXrotCount[ corners[5].orient];
+        allCubes[2].orient = nextFaceXrotCount[ allCubes[14].orient];
+
+        //down edge
+        //if(corners[8].orient == down) edges[5].orient = back;
+        //edges[5].orient = nextFaceXrotCount[ edges[8].orient];
+        if(allCubes[13].orient == down) allCubes[9].orient = back;
+
+        //front down corner
+        //if(corners[4].orient == front) corners[5].orient = down;
+        //else if(corners[4].orient == down) corners[5].orient = back;
+        //corners[5].orient = nextFaceXrotCount[ corners[4].orient];
+        allCubes[14].orient = nextFaceXrotCount[ allCubes[12].orient];
+
+        //front edge
+        //if(edges[4].orient == front) edges[8].orient = down;
+        //edges[8].orient = nextFaceXrotCount[ edges[4].orient];
+        if(allCubes[8].orient == front) allCubes[13].orient = down;
+
+        //up front corner
+        //if(tempCorner == up) corners[4].orient = front;
+        //else if(tempCorner == front) corners[4].orient = down;
+        //corners[4].orient = nextFaceXrotCount[ tempCorner];
+        allCubes[12].orient = nextFaceXrotCount[ tempCorner];
+
+        //up edge
+        //if(tempEdge == up) edges[4].orient = front;
+        //edges[4].orient = nextFaceXrotCount[ tempEdge];
+        if(tempEdge == up) allCubes[8].orient = front;
+        
+    } 
+    //==================================================================
+    //==================================================================
+
+
 
     //==================================================================
     //==================================================================

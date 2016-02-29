@@ -227,6 +227,7 @@ namespace PRETZEL
 
             void rotUcount();
 
+            void rotCubeNumsToRight3( int, int, int, int); //testing
             void rotCubeNumsToRight( int, int, int, int); //testing
             void rotCornerNumsToRight( int, int, int, int); //testing
             void rotEdgeNumsToRight( int, int, int, int);   //testing          
@@ -234,6 +235,8 @@ namespace PRETZEL
             void rotRcountCubes();                      //testing
             void rotUcountCubes2();                      //testing
             void rotRcountCubes2();                      //testing
+            void rotUcountCubes3();                      //testing
+            void rotRcountCubes3();                      //testing
 
             void rotUtwice();
             void rotUclock();
@@ -289,6 +292,8 @@ namespace PRETZEL
 
             int cubeNum[NUM_CUBES];
             Face cubeOrient[NUM_CUBES];
+
+            Cube allCubes[NUM_CUBES];
 
             SqType square[NUM_SQ];
 

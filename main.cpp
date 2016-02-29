@@ -40,38 +40,55 @@ int main()
     //}
 
 
+    for( int i = 0; i < numIterations; ++i)
+    {
+        r1.rotUcountCubes();
+        r1.rotRcountCubes();
+        if( sum & 0x1){
+            r1.rotUcountCubes();
+            r1.rotUcountCubes();
+        } else {
+            r1.rotUcountCubes();
+        }
+        r1.rotRcountCubes();
+
+        //sum = sum + r1.findSquare(j);
+        
+    }
+
+
     //for( int i = 0; i < numIterations; ++i)
     //{
-    //    r1.rotUcountCubes();
-    //    r1.rotRcountCubes();
+    //    r1.rotUcountCubes2();
+    //    r1.rotRcountCubes2();
     //    if( sum & 0x1){
-    //        r1.rotUcountCubes();
-    //        r1.rotUcountCubes();
+    //        r1.rotUcountCubes2();
+    //        r1.rotUcountCubes2();
     //    } else {
-    //        r1.rotUcountCubes();
+    //        r1.rotUcountCubes2();
     //    }
-    //    r1.rotRcountCubes();
+    //    r1.rotRcountCubes2();
 
     //    //sum = sum + r1.findSquare(j);
     //    
     //}
 
 
-    for( int i = 0; i < numIterations; ++i)
-    {
-        r1.rotUcountCubes2();
-        r1.rotRcountCubes2();
-        if( sum & 0x1){
-            r1.rotUcountCubes2();
-            r1.rotUcountCubes2();
-        } else {
-            r1.rotUcountCubes2();
-        }
-        r1.rotRcountCubes2();
+    //for( int i = 0; i < numIterations; ++i)
+    //{
+    //    r1.rotUcountCubes3();
+    //    r1.rotRcountCubes3();
+    //    if( sum & 0x1){
+    //        r1.rotUcountCubes3();
+    //        r1.rotUcountCubes3();
+    //    } else {
+    //        r1.rotUcountCubes3();
+    //    }
+    //    r1.rotRcountCubes3();
 
-        //sum = sum + r1.findSquare(j);
-        
-    }
+    //    //sum = sum + r1.findSquare(j);
+    //    
+    //}
     //r1.rotUcountCubes();
     
     auto elapsedTime = std::chrono::high_resolution_clock::now() - startTime;
