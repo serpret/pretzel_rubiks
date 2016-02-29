@@ -2,47 +2,6 @@
 #define __PRETZEL_RUBIKS__
 #include <vector>
 
-// below is a rubiks cube with squares labeled by their position.
-// The bottom, left, and back faces are projected outward as if onto
-// a screen.
-//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-//            34                                         30            
-//                                                                       
-//      35    33      left                      back     31    29      
-//                                                                       
-//36          32                                         24          28 
-//                                                                       
-//37    39                        4                            25    27
-//                                                                       
-//38                        3           5                            26 
-//                     
-//                    2          up           6                     
-//                  
-//                          1           7
-//               22                              10
-//                                0                   
-//               21    23                   9    11  
-//
-//               20          16       8          12   
-//        
-//   front             19    17      15    13            right
-//
-//                           18      14
-//
-//                                                          
-//                                                          
-//                                                          
-//                               40                                       
-//                                                                        
-//                         41          47                                   
-//                                                                            
-//                   42         down         46                             
-//                                                                           
-//                         43          45                                   
-//                                                                            
-//                               44        
-//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
 
 // two structures for edges and corners
 //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -65,26 +24,6 @@
 //                                                          
 //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
-// single structure for all cubes
-//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-//                                4         
-//                                                                       
-//                          5           3  
-//                     
-//                    6          up           2                     
-//                  
-//                          7           1 
-//                   11                       9 
-//                                0                   
-//
-//                   18                      14  
-//                                8 
-//       front            19            13              right
-//
-//                               12                                      
-//                                                          
-//                                                          
-//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 //  Author: Sergy Pretetsky
@@ -178,12 +117,8 @@ namespace PRETZEL
     {
 
         public:
-            //rubiks cube has 48 squares (although only
-            // 20 cubes, this class operates on squares)
-            static const int NUM_SQ = 48;
-            static const int NUM_CORNER_CUBES = 8;
-            static const int NUM_EDGE_CUBES = 12;
-            static const int NUM_CUBES = 20;
+            static const int NUM_CORNER_CUBES{8};// = 8;
+            static const int NUM_EDGE_CUBES{12};// = 12;
 
             //rubiks cube has 6 faces
             enum Face { up      = 0,
@@ -195,11 +130,12 @@ namespace PRETZEL
                         numFaces,
                         emptyFace      };
 
-            const Face nextFaceYrotCount[numFaces] = { up, down, front, back,
-                                                    right, left};
-
-            const Face nextFaceXrotCount[numFaces] = {front, back, left, right, 
-                                                    down, up};
+            Face nextFaceXrotCount[numFaces];
+            Face nextFaceXrotClock[numFaces];
+            Face nextFaceYrotCount[numFaces];
+            Face nextFaceYrotClock[numFaces];
+            Face nextFaceZrotClock[numFaces];
+            Face nextFaceZrotCount[numFaces];
 
             //each face can be rotated 90 degrees counter-clockwise or
             //clockwise, or 180 degrees which we call twice.
@@ -209,37 +145,20 @@ namespace PRETZEL
                            numRots,
                            emptyRot  };
 
-            //Face nextFaceYrotCount[numFaces];
 
             
 
-        typedef int SqType;
-        typedef std::vector<std::pair< Face, Rot>> RotRecordType;
+            typedef std::vector<std::pair< Face, Rot>> RotRecordType;
 
             rubiks();
             rubiks( const rubiks&) = default; 
             ~rubiks() = default;
 
-            void print();
             void printRecord();
 
-            int findSquare(SqType);
-
             void rotUcount();
-
-            void rotCubeNumsToRight3( int, int, int, int); //testing
-            void rotCubeNumsToRight( int, int, int, int); //testing
-            void rotCornerNumsToRight( int, int, int, int); //testing
-            void rotEdgeNumsToRight( int, int, int, int);   //testing          
-            void rotUcountCubes();                      //testing
-            void rotRcountCubes();                      //testing
-            void rotUcountCubes2();                      //testing
-            void rotRcountCubes2();                      //testing
-            void rotUcountCubes3();                      //testing
-            void rotRcountCubes3();                      //testing
-
-            void rotUtwice();
-            void rotUclock();
+            void rotUtwice(); //this function is currently unoptimized
+            void rotUclock(); //this function is currently unoptimized
 
             void rotDcount();
             void rotDtwice();
@@ -262,14 +181,14 @@ namespace PRETZEL
             void rotBclock();
 
             void scramble(int steps);
-            Rot invRot(Rot );
-            void inc( Face&);
-            void inc( Rot& );
+            //Rot invRot(Rot );
+            //void inc( Face&);
+            //void inc( Rot& );
 
         private:
             void (rubiks::*rotFuncPtr[numFaces][numRots])(void);
-            void rotToTheRight( int a, int b);
-            void rotToTheRight( int a, int b, int c, int d);
+            void rotCornerNumsToRight( int, int, int, int); 
+            void rotEdgeNumsToRight( int, int, int, int);           
             //void addRotStep( Face&, Rot&);
             //void removeRotStep( Face&, Rot&);
             //void pushRotStep( Face, Rot, vector<Face>&, vector<Rot>&);
@@ -280,7 +199,6 @@ namespace PRETZEL
             //void travelToStep(int); //helper function for solveBreadthRecursion
             //bool isLastRotInStep(); //helper function for solveBreadthRecursion
             //void moveToNextStep();  //helper function for solveBreadthRecursion
-            //PeekCornerPos convertSqPosToPeekCorner(int); //helper
 
             struct Cube{
                 int cubeNum;
@@ -289,13 +207,6 @@ namespace PRETZEL
 
             Cube corners[NUM_CORNER_CUBES];
             Cube edges[NUM_EDGE_CUBES];
-
-            int cubeNum[NUM_CUBES];
-            Face cubeOrient[NUM_CUBES];
-
-            Cube allCubes[NUM_CUBES];
-
-            SqType square[NUM_SQ];
 
             RotRecordType rotRecord;
 
