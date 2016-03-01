@@ -7,12 +7,10 @@ using namespace PRETZEL;
 int main()
 {
     rubiks r1;
-    int j; 
+    int j = 2; 
     int sum{0};
 
-    std::cout << "Input a random number between 0 and 47" << std::endl;
-    std::cin >> j;
-
+    r1.print();
 
     auto startTime = std::chrono::high_resolution_clock::now();
 

@@ -1,8 +1,8 @@
 #include "rubiks.h++"
+#include "printToCoord.h++"
 #include <thread>
 #include <iostream> //used for printing the cube
 #include <iomanip>  //used for printing the cube
-#include <string>   //used for printing the cube
 #include <random>   //used to scramble cube
 
 
@@ -13,17 +13,17 @@
 //
 //
 //
-//             2                                     2
+//             2U                                    2
 //
-//       2                                                 1
-//             6                                     6
-// 3                                                             1
+//       2U                                                1
+//             6L                                    6
+// 3U                                                            1
 //                                2         
-//             6                                     6
-// 7                        2           1                        5
-//      10                                                 9 
+//             6D                                    6
+// 7L                       2           1                        5
+//      10D                                                9 
 //                    3                       1                    
-// 7                                                             5 
+// 7D                                                            5 
 //                          3           0 
 //                    7                       5
 //                                0                   
@@ -38,28 +38,12 @@
 //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 
-//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-//                                2         
-//                                                                       
-//                          2           1  
-//                     
-//                    3                       1                     
-//                  
-//                          3           0 
-//                    7                       5
-//                                0                   
-//
-//                    7                       5
-//                                4 
-//       front             11            8              right
-//
-//                                4                                      
-//                                                          
-//                                                          
-//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 namespace PRETZEL
 {
+    using std::cout;
+    using std::endl;
+    using std::setw;
       
 
 
@@ -159,6 +143,43 @@ namespace PRETZEL
     //==================================================================
     //==================================================================
 
+
+    //==================================================================
+    //==================================================================
+    void rubiks::print()
+    {
+        PrintToCoord printBuffer; 
+        const int NUM_STR_ROWS = 11;
+        const int HOR_SPACE_WID = 5;
+        const int BEGIN_COL = 2;
+        const int SIDE_SQ_BEGIN_COL = 9;
+        int rowOffset[ NUM_STR_ROWS];
+        
+
+        printBuffer.setWindow( NUM_STR_ROWS * HOR_SPACE_WID, 25);
+
+        rowOffset[0] = 0;
+        for(int i = 1; i < NUM_STR_ROWS; ++i)
+        {
+            rowOffset[i] = rowOffset[i-1] + HOR_SPACE_WID; 
+        }
+
+        
+        //draw the left face 
+        printBuffer.addStr( returnOrientChar( corners, 7), 
+                            BEGIN_COL,
+                            SIDE_SQ_BEGIN_COL,
+                            PrintToCoord::alignRight );
+
+        std::cout << printBuffer;
+                            
+                            
+        //draw the back square
+        //
+
+    }
+    //==================================================================
+    //==================================================================
 
          
     //==================================================================
@@ -302,6 +323,54 @@ namespace PRETZEL
     //==================================================================
 
 
+    //return here
+    //==================================================================
+    //==================================================================
+    void rubiks::rotDcount()
+    {
+
+        //test function
+        rotCornerNumsToRight( 0, 1, 2, 3);
+        rotEdgeNumsToRight(0, 1, 2, 3);
+
+        Face tempCorner = corners[0].orient;
+        Face tempEdge = edges[0].orient;
+
+        // left -> front -> right -> back -> ...
+
+        //it's faster to have 1 conditional to determine next orientation,
+        // however, we would need to 2 conditionals for corners, in which
+        // case it is faster to do array lookups
+
+        //front edge
+        if(edges[3].orient == front) edges[0].orient = right;
+
+        //front left corner
+        corners[0].orient = nextFaceYrotCount[ corners[3].orient ];
+
+        //left edge
+        if(edges[2].orient == left) edges[3].orient = front;
+
+        //back left corner
+        corners[3].orient = nextFaceYrotCount[ corners[2].orient ];
+
+        //back edge
+        if(edges[1].orient == back) edges[2].orient = left;
+       
+        //back right corner 
+        corners[2].orient = nextFaceYrotCount[ corners[1].orient ];
+    
+        //right edge
+        if(tempEdge == right) edges[1].orient = back;
+    
+        //front right corner
+        corners[1].orient = nextFaceYrotCount[ tempCorner];
+        
+    } 
+    //==================================================================
+    //==================================================================
+
+
 
     //==================================================================
     //==================================================================
@@ -350,6 +419,15 @@ namespace PRETZEL
     //==================================================================
 
 
+    //==================================================================
+    //==================================================================
+    void rubiks::rotRtwice()
+    {
+        rotRcount();
+        rotRcount();
+    }
+    //==================================================================
+    //==================================================================
 
     ////==================================================================
     ////==================================================================
@@ -760,5 +838,32 @@ namespace PRETZEL
     //}
     ////==================================================================
     ////==================================================================
+
+    
+    //==================================================================
+    //==================================================================
+    std::string rubiks::returnOrientChar(Cube cubeArray[], int cubeNum)
+    {
+        std::string orientStr;
+
+        switch(cubeArray[cubeNum].orient){
+            case up: orientStr = "U";
+                     break;
+            case down: orientStr = "D";
+                     break;
+            case left: orientStr = "L";
+                     break;
+            case right: orientStr = "U";
+                     break;
+            case front: orientStr = "F";
+                     break;
+            case back: orientStr = "B";
+                     break;
+        }
+
+        return orientStr;
+    }
+    //==================================================================
+    //==================================================================
 
 }

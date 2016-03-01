@@ -1,7 +1,16 @@
 #ifndef __PRETZEL_RUBIKS__
 #define __PRETZEL_RUBIKS__
 #include <vector>
+#include "string"
 
+//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+//  Author: Sergy Pretetsky
+
+//  email: serpret.spam@gmail.com (yes this is a spam email, yes i do check it)
+
+//  description: This class holds a rubiks cube combination and helps with
+//               with solving the rubiks cube.
+//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 // two structures for edges and corners
 //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -25,14 +34,38 @@
 //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 
+// two structures for edges and corners, indices marked for both
+// indices generally are numbered in a counter clockwise fashion
+// looking down on the cube.
 //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-//  Author: Sergy Pretetsky
-
-//  email: serpret.spam@gmail.com (yes this is a spam email, yes i do check it)
-
-//  description: This class holds a rubiks cube combination and helps with
-//               with solving the rubiks cube.
+//
+//
+//
+//             2U                                    2
+//
+//       2U                                                1
+//             6L                                    6
+// 3U                                                            1
+//                                2         
+//             6D                                    6
+// 7L                       2           1                        5
+//      10D                                                9 
+//                    3                       1                    
+// 7D                                                            5 
+//                          3           0 
+//                    7                       5
+//                                0                   
+//
+//                    7                       5
+//                                4 
+//       front             11            8              right
+//
+//                                4                                      
+//                                                          
+//                                                          
 //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+
 
 
 
@@ -58,10 +91,6 @@
 //      postcondition: prints the current rotation steps found in
 //                      the rotation record to screen
 
-//int findSquare( SqType squareToFind)
-//      precondition: squareToFind is a square (as shown in the diagram
-//                  at the top of this file) within the rubiks cube.
-//      postcondition: the location of the square is returned
 //====================================================================
 
 
@@ -69,13 +98,10 @@
 //======== Class Modifiers ===========================================
 //all void rotXYYYYY() functions (ex: rotUclock() , rotDtwice() )
 //      precondition: none
-//      postcondition: the rubiks cube will rotate the squares correctly
+//      postcondition: the rubiks cube will rotate the cubes correctly
 //                  according to the rotation that was performed.  For
 //                  example, rotUclock will rotate all of the cubes in
-//                  the "up" face clockwise.  This means the contents
-//                  of square 0 will be moved to 2, the contents of
-//                  square 16 will be moved to square 36, the contents
-//                  of square 8 will be moved to square 22, etc.
+//                  the "up" face clockwise. 
 
 //void scramble(int numSteps)
 //      precondition: none
@@ -130,6 +156,11 @@ namespace PRETZEL
                         numFaces,
                         emptyFace      };
 
+            struct Cube{
+                int cubeNum;
+                Face orient;
+            } ;
+
             Face nextFaceXrotCount[numFaces];
             Face nextFaceXrotClock[numFaces];
             Face nextFaceYrotCount[numFaces];
@@ -154,6 +185,7 @@ namespace PRETZEL
             rubiks( const rubiks&) = default; 
             ~rubiks() = default;
 
+            void print();
             void printRecord();
 
             void rotUcount();
@@ -199,11 +231,8 @@ namespace PRETZEL
             //void travelToStep(int); //helper function for solveBreadthRecursion
             //bool isLastRotInStep(); //helper function for solveBreadthRecursion
             //void moveToNextStep();  //helper function for solveBreadthRecursion
+            std::string returnOrientChar( Cube[], int);
 
-            struct Cube{
-                int cubeNum;
-                Face orient;
-            } ;
 
             Cube corners[NUM_CORNER_CUBES];
             Cube edges[NUM_EDGE_CUBES];
