@@ -1,5 +1,4 @@
 #include "rubiks.h++"
-#include "printToCoord.h++"
 #include <thread>
 #include <iostream> //used for printing the cube
 #include <iomanip>  //used for printing the cube
@@ -150,32 +149,174 @@ namespace PRETZEL
     {
         PrintToCoord printBuffer; 
         const int NUM_STR_ROWS = 11;
-        const int HOR_SPACE_WID = 5;
+        const int HOR_SPACE = 6;
+        const int VER_SPACE_UP = 3;
+        const int VER_SPACE_DIAG = 2;
         const int BEGIN_COL = 2;
-        const int SIDE_SQ_BEGIN_COL = 9;
+        const int END_COL = NUM_STR_ROWS * HOR_SPACE;
+        const int BEGIN_COL_CENTER = (BEGIN_COL+END_COL) / 2 ;
+                                //BEGIN_COL + 5*HOR_SPACE;
+        const int BEGIN_ROW_CENTER = 3;
+        const int SIDE_SQ_BEGIN_ROW = 9;
         int rowOffset[ NUM_STR_ROWS];
+
+        int currentRow;
+        int currentCol;
         
 
-        printBuffer.setWindow( NUM_STR_ROWS * HOR_SPACE_WID, 25);
+        printBuffer.setWindow( END_COL +5, 25);
 
         rowOffset[0] = 0;
         for(int i = 1; i < NUM_STR_ROWS; ++i)
         {
-            rowOffset[i] = rowOffset[i-1] + HOR_SPACE_WID; 
+            rowOffset[i] = rowOffset[i-1] + HOR_SPACE; 
         }
 
         
         //draw the left face 
-        printBuffer.addStr( returnOrientChar( corners, 7), 
-                            BEGIN_COL,
-                            SIDE_SQ_BEGIN_COL,
-                            PrintToCoord::alignRight );
+        //bottom most point first going straight up
+        currentCol = BEGIN_COL;
+        currentRow = SIDE_SQ_BEGIN_ROW;
+        addToPrintBufCube( printBuffer, corners , 7, currentCol, currentRow);
+
+        currentCol = BEGIN_COL;
+        currentRow = SIDE_SQ_BEGIN_ROW + VER_SPACE_UP ;
+        addToPrintBufCube( printBuffer, edges , 7, currentCol, currentRow );
+
+        currentCol = BEGIN_COL;
+        currentRow = SIDE_SQ_BEGIN_ROW + 2*VER_SPACE_UP ;
+        addToPrintBufCube( printBuffer, corners , 3, currentCol, currentRow );
+
+        //now the edge over at 10 going up to edge 2
+        currentCol = BEGIN_COL + HOR_SPACE;
+        currentRow = SIDE_SQ_BEGIN_ROW + VER_SPACE_DIAG ;
+        addToPrintBufCube( printBuffer, edges , 10, currentCol, currentRow );
+
+        currentCol = BEGIN_COL + HOR_SPACE;
+        currentRow = SIDE_SQ_BEGIN_ROW + 2*VER_SPACE_UP + VER_SPACE_DIAG;
+        addToPrintBufCube( printBuffer, edges , 2, currentCol, currentRow );
+
+        //now the corner at 6 going straight up to edge6 and corner 2
+        currentCol = BEGIN_COL + 2*HOR_SPACE;
+        currentRow = SIDE_SQ_BEGIN_ROW + 0*VER_SPACE_UP + 2*VER_SPACE_DIAG;
+        addToPrintBufCube( printBuffer, corners , 6, currentCol, currentRow );
+
+        currentCol = BEGIN_COL + 2*HOR_SPACE;
+        currentRow = SIDE_SQ_BEGIN_ROW + 1*VER_SPACE_UP + 2*VER_SPACE_DIAG;
+        addToPrintBufCube( printBuffer, edges , 6, currentCol, currentRow );
+
+        currentCol = BEGIN_COL + 2*HOR_SPACE;
+        currentRow = SIDE_SQ_BEGIN_ROW + 2*VER_SPACE_UP + 2*VER_SPACE_DIAG;
+        addToPrintBufCube( printBuffer, corners , 2, currentCol, currentRow );
+
+        //draw the back face
+        //bottom most point first going straight up
+        currentCol = END_COL;
+        currentRow = SIDE_SQ_BEGIN_ROW;
+        addToPrintBufCube( printBuffer, corners , 5, currentCol, currentRow);
+
+        currentCol = END_COL;
+        currentRow = SIDE_SQ_BEGIN_ROW + VER_SPACE_UP ;
+        addToPrintBufCube( printBuffer, edges , 5, currentCol, currentRow );
+
+        currentCol = END_COL;
+        currentRow = SIDE_SQ_BEGIN_ROW + 2*VER_SPACE_UP ;
+        addToPrintBufCube( printBuffer, corners , 1, currentCol, currentRow );
+
+        //now the edge over at 9 going up to edge 1 
+        currentCol = END_COL - HOR_SPACE;
+        currentRow = SIDE_SQ_BEGIN_ROW + VER_SPACE_DIAG ;
+        addToPrintBufCube( printBuffer, edges , 9, currentCol, currentRow );
+
+        currentCol = END_COL - HOR_SPACE;
+        currentRow = SIDE_SQ_BEGIN_ROW + 2*VER_SPACE_UP + VER_SPACE_DIAG;
+        addToPrintBufCube( printBuffer, edges , 1, currentCol, currentRow );
+
+        //now the corner at 6 going straight up to edge6 and corner 2
+        currentCol = END_COL - 2*HOR_SPACE;
+        currentRow = SIDE_SQ_BEGIN_ROW + 0*VER_SPACE_UP + 2*VER_SPACE_DIAG;
+        addToPrintBufCube( printBuffer, corners , 6, currentCol, currentRow );
+
+        currentCol = END_COL - 2*HOR_SPACE;
+        currentRow = SIDE_SQ_BEGIN_ROW + 1*VER_SPACE_UP + 2*VER_SPACE_DIAG;
+        addToPrintBufCube( printBuffer, edges , 6, currentCol, currentRow );
+
+        currentCol = END_COL - 2*HOR_SPACE;
+        currentRow = SIDE_SQ_BEGIN_ROW + 2*VER_SPACE_UP + 2*VER_SPACE_DIAG;
+        addToPrintBufCube( printBuffer, corners , 2, currentCol, currentRow );
+
+        //now lets draw the center cube, start with the right face 
+        //bottom most point first going straight up
+        currentCol = BEGIN_COL_CENTER;
+        currentRow = BEGIN_ROW_CENTER;
+        addToPrintBufCube( printBuffer, corners , 4, currentCol, currentRow);
+
+        currentCol = BEGIN_COL_CENTER;
+        currentRow = BEGIN_ROW_CENTER + VER_SPACE_UP ;
+        addToPrintBufCube( printBuffer, edges , 4, currentCol, currentRow );
+
+        currentCol = BEGIN_COL_CENTER;
+        currentRow = BEGIN_ROW_CENTER + 2*VER_SPACE_UP ;
+        addToPrintBufCube( printBuffer, corners , 0, currentCol, currentRow );
+
+        currentCol = BEGIN_COL_CENTER;
+        currentRow = BEGIN_ROW_CENTER + 2*VER_SPACE_UP + 4*VER_SPACE_DIAG ;
+        addToPrintBufCube( printBuffer, corners , 2, currentCol, currentRow );
+
+        //now the edge over at 8 going up to edge 0 
+        currentCol = BEGIN_COL_CENTER + HOR_SPACE;
+        currentRow = BEGIN_ROW_CENTER + VER_SPACE_DIAG ;
+        addToPrintBufCube( printBuffer, edges , 8, currentCol, currentRow );
+
+        currentCol = BEGIN_COL_CENTER + HOR_SPACE;
+        currentRow = BEGIN_ROW_CENTER + 2*VER_SPACE_UP + VER_SPACE_DIAG;
+        addToPrintBufCube( printBuffer, edges , 0, currentCol, currentRow );
+
+        currentCol = BEGIN_COL_CENTER + HOR_SPACE;
+        currentRow = BEGIN_ROW_CENTER + 2*VER_SPACE_UP + 3*VER_SPACE_DIAG;
+        addToPrintBufCube( printBuffer, edges , 1, currentCol, currentRow );
+
+        //now the corner at 5 going straight up to edge5 and corner1 
+        currentCol = BEGIN_COL_CENTER + 2*HOR_SPACE;
+        currentRow = BEGIN_ROW_CENTER + 0*VER_SPACE_UP + 2*VER_SPACE_DIAG;
+        addToPrintBufCube( printBuffer, corners , 5, currentCol, currentRow );
+
+        currentCol = BEGIN_COL_CENTER + 2*HOR_SPACE;
+        currentRow = BEGIN_ROW_CENTER + 1*VER_SPACE_UP + 2*VER_SPACE_DIAG;
+        addToPrintBufCube( printBuffer, edges , 5, currentCol, currentRow );
+
+        currentCol = BEGIN_COL_CENTER + 2*HOR_SPACE;
+        currentRow = BEGIN_ROW_CENTER + 2*VER_SPACE_UP + 2*VER_SPACE_DIAG;
+        addToPrintBufCube( printBuffer, corners , 1, currentCol, currentRow );
+
+        // now the front face
+        //now the edge over at 11 going up to edge3 
+        currentCol = BEGIN_COL_CENTER - HOR_SPACE;
+        currentRow = BEGIN_ROW_CENTER + VER_SPACE_DIAG ;
+        addToPrintBufCube( printBuffer, edges , 11, currentCol, currentRow );
+
+        currentCol = BEGIN_COL_CENTER - HOR_SPACE;
+        currentRow = BEGIN_ROW_CENTER + 2*VER_SPACE_UP + VER_SPACE_DIAG;
+        addToPrintBufCube( printBuffer, edges , 3, currentCol, currentRow );
+
+        currentCol = BEGIN_COL_CENTER - HOR_SPACE;
+        currentRow = BEGIN_ROW_CENTER + 2*VER_SPACE_UP + 3*VER_SPACE_DIAG;
+        addToPrintBufCube( printBuffer, edges , 2, currentCol, currentRow );
+
+        //now the corner at 7 going straight up to edge7 and corner3 
+        currentCol = BEGIN_COL_CENTER - 2*HOR_SPACE;
+        currentRow = BEGIN_ROW_CENTER + 0*VER_SPACE_UP + 2*VER_SPACE_DIAG;
+        addToPrintBufCube( printBuffer, corners , 7, currentCol, currentRow );
+
+        currentCol = BEGIN_COL_CENTER - 2*HOR_SPACE;
+        currentRow = BEGIN_ROW_CENTER + 1*VER_SPACE_UP + 2*VER_SPACE_DIAG;
+        addToPrintBufCube( printBuffer, edges , 7, currentCol, currentRow );
+
+        currentCol = BEGIN_COL_CENTER - 2*HOR_SPACE;
+        currentRow = BEGIN_ROW_CENTER + 2*VER_SPACE_UP + 2*VER_SPACE_DIAG;
+        addToPrintBufCube( printBuffer, corners , 3, currentCol, currentRow );
 
         std::cout << printBuffer;
-                            
-                            
-        //draw the back square
-        //
 
     }
     //==================================================================
@@ -184,7 +325,7 @@ namespace PRETZEL
          
     //==================================================================
     //==================================================================
-    void rubiks::printRecord()
+    void rubiks::printRecord() const
     {
         std::string strFace; //will hold the face to string conversion
         std::string strRot;  //will hold the rotation to string conversion
@@ -842,7 +983,8 @@ namespace PRETZEL
     
     //==================================================================
     //==================================================================
-    std::string rubiks::returnOrientChar(Cube cubeArray[], int cubeNum)
+    std::string rubiks::returnOrientStr(const Cube cubeArray[], 
+                                        int cubeNum            ) const
     {
         std::string orientStr;
 
@@ -853,7 +995,7 @@ namespace PRETZEL
                      break;
             case left: orientStr = "L";
                      break;
-            case right: orientStr = "U";
+            case right: orientStr = "R";
                      break;
             case front: orientStr = "F";
                      break;
@@ -866,4 +1008,28 @@ namespace PRETZEL
     //==================================================================
     //==================================================================
 
+
+
+    //==================================================================
+    //==================================================================
+    void rubiks::addToPrintBufCube( PrintToCoord &stringBuffer, 
+                                    const Cube cubeArray[], 
+                                    int cubeNum, 
+                                    int col, 
+                                    int row             ) const
+    {
+        std::string cubeNumStr = std::to_string(cubeArray[cubeNum].cubeNum);
+        stringBuffer.addStr( cubeNumStr, 
+                            col,
+                            row,
+                            PrintToCoord::alignRight );
+        stringBuffer.addStr( "-",
+                             col+1,
+                             row,
+                             PrintToCoord::alignLeft);
+        stringBuffer.addStr( returnOrientStr( cubeArray, cubeNum),
+                             col+2,
+                             row,
+                             PrintToCoord::alignLeft);
+    }
 }

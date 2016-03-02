@@ -2,6 +2,7 @@
 #define __PRETZEL_RUBIKS__
 #include <vector>
 #include "string"
+#include "printToCoord.h++"
 
 //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 //  Author: Sergy Pretetsky
@@ -185,8 +186,8 @@ namespace PRETZEL
             rubiks( const rubiks&) = default; 
             ~rubiks() = default;
 
-            void print();
-            void printRecord();
+            void print() ;
+            void printRecord() const;
 
             void rotUcount();
             void rotUtwice(); //this function is currently unoptimized
@@ -231,7 +232,9 @@ namespace PRETZEL
             //void travelToStep(int); //helper function for solveBreadthRecursion
             //bool isLastRotInStep(); //helper function for solveBreadthRecursion
             //void moveToNextStep();  //helper function for solveBreadthRecursion
-            std::string returnOrientChar( Cube[], int);
+            std::string returnOrientStr( const Cube[], int) const;
+            void addToPrintBufCube( PrintToCoord&, const Cube[], 
+                                    int, int, int) const;
 
 
             Cube corners[NUM_CORNER_CUBES];

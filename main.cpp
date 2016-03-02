@@ -11,6 +11,10 @@ int main()
     int sum{0};
 
     r1.print();
+    r1.rotUcount();
+    r1.print();
+    r1.rotRcount();
+    r1.print();
 
     auto startTime = std::chrono::high_resolution_clock::now();
 
