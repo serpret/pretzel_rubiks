@@ -6,67 +6,51 @@
 
 //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 //  Author: Sergy Pretetsky
-
+//
 //  email: serpret.spam@gmail.com (yes this is a spam email, yes i do check it)
-
+//
 //  description: This class holds a rubiks cube combination and helps with
 //               with solving the rubiks cube.
 //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
-// two structures for edges and corners
+
+
 //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-//                                2         
+// Below is a representation of the rubiks cube and how it is internally
+// represented.  Corners and edges are stored in separate data structures
+// which is why many corners and edges have the same index.  Orientation
+// of the cube is represnted as a letter after the index.  The middle shape 
+// is the cube from an isometric view, the two side angled squares are
+// the left face projected outward and the back face projected outward.
+// Some of the corners/edges are represented twice on the main cube and on the
+// projected faces.
+//U = up
+//D = down
+//L = left
+//R = right
+//F = front
+//B = back
+//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+//
+//  left        2-U                                     2-U    back          
 //                                                                       
-//                          2           1  
-//                     
-//                    3          up           1                     
-//                  
-//                          3           0 
-//                    7                       5
-//                                0                   
+//        2-U                       2-U                       1-U        
+//              6-L                                     6-L              
+//  3-U                       2-U         1-U                       1-U  
+//                                                                       
+//              6-D     3-U          up         1-U     6-D              
+//  7-L                                                             5-R  
+//       10-D                 3-U         0-U                 9-D        
+//                      7-L                     5-R                      
+//  7-D                             0-U                             5-D  
+//                                                                       
+//                      7-D                     5-D                      
+//                                  4-R                                  
+//                           11-D         8-D                            
+//                                                                       
+//            front                 4-D            right 
 //
-//                    7                       5
-//                                4 
-//       front             11            8              right
-//
-//                                4                                      
-//                                                          
-//                                                          
 //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
-
-// two structures for edges and corners, indices marked for both
-// indices generally are numbered in a counter clockwise fashion
-// looking down on the cube.
-//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-//
-//
-//
-//             2U                                    2
-//
-//       2U                                                1
-//             6L                                    6
-// 3U                                                            1
-//                                2         
-//             6D                                    6
-// 7L                       2           1                        5
-//      10D                                                9 
-//                    3                       1                    
-// 7D                                                            5 
-//                          3           0 
-//                    7                       5
-//                                0                   
-//
-//                    7                       5
-//                                4 
-//       front             11            8              right
-//
-//                                4                                      
-//                                                          
-//                                                          
-//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
-
 
 
 
@@ -214,14 +198,18 @@ namespace PRETZEL
             void rotBclock();
 
             void scramble(int steps);
+
+            int returnCubeNumAtCorner(int) const;
             //Rot invRot(Rot );
             //void inc( Face&);
             //void inc( Rot& );
 
         private:
             void (rubiks::*rotFuncPtr[numFaces][numRots])(void);
-            void rotCornerNumsToRight( int, int, int, int); 
-            void rotEdgeNumsToRight( int, int, int, int);           
+            void rotCornerNumsToRight(  int, int, int, int); 
+            void rotEdgeNumsToRight(    int, int, int, int);           
+            void rotCornerOrientsToRight(   Face[],   int, int, int, int);
+            void rotEdgeOrientsToRight(     Face[],   int, int, int, int);
             //void addRotStep( Face&, Rot&);
             //void removeRotStep( Face&, Rot&);
             //void pushRotStep( Face, Rot, vector<Face>&, vector<Rot>&);

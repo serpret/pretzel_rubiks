@@ -5,9 +5,6 @@
 #include <random>   //used to scramble cube
 
 
-// two structures for edges and corners, indices marked for both
-// indices generally are numbered in a counter clockwise fashion
-// looking down on the cube.
 //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 //
 //
@@ -94,6 +91,19 @@ namespace PRETZEL
             else edges[i].orient = down;
         }
 
+        //testing rotUcount
+        //edges[0].orient = right;
+        //corners[0].orient = front;
+        //corners[1].orient = back;
+
+        //testing rotRcount (use rotUcount testing as well)
+        //corners[0].orient = right;
+
+        //testing rotDcount
+        corners[5].orient = back;
+        edges[8].orient = right;
+        corners[4].orient = front;
+
         //next face from current face rotations for x,y,z axis
         // clockwise rotations are the same as 3 counter clockwise rotations
         nextFaceXrotCount[up]    = front;
@@ -153,9 +163,8 @@ namespace PRETZEL
         const int VER_SPACE_UP = 3;
         const int VER_SPACE_DIAG = 2;
         const int BEGIN_COL = 2;
-        const int END_COL = NUM_STR_ROWS * HOR_SPACE;
+        const int END_COL = 80;// NUM_STR_ROWS * HOR_SPACE;
         const int BEGIN_COL_CENTER = (BEGIN_COL+END_COL) / 2 ;
-                                //BEGIN_COL + 5*HOR_SPACE;
         const int BEGIN_ROW_CENTER = 3;
         const int SIDE_SQ_BEGIN_ROW = 9;
         int rowOffset[ NUM_STR_ROWS];
@@ -164,7 +173,7 @@ namespace PRETZEL
         int currentCol;
         
 
-        printBuffer.setWindow( END_COL +5, 25);
+        printBuffer.setWindow( END_COL +5, SIDE_SQ_BEGIN_ROW + 5*VER_SPACE_UP);
 
         rowOffset[0] = 0;
         for(int i = 1; i < NUM_STR_ROWS; ++i)
@@ -397,43 +406,53 @@ namespace PRETZEL
     void rubiks::rotUcount()
     {
 
-        //test function
         rotCornerNumsToRight( 0, 1, 2, 3);
         rotEdgeNumsToRight(0, 1, 2, 3);
+        rotCornerOrientsToRight(nextFaceYrotCount, 0, 1, 2, 3);
+        rotEdgeOrientsToRight(nextFaceYrotCount,0, 1, 2, 3);
 
+     /*
         Face tempCorner = corners[0].orient;
         Face tempEdge = edges[0].orient;
 
         // left -> front -> right -> back -> ...
-
-        //it's faster to have 1 conditional to determine next orientation,
-        // however, we would need to 2 conditionals for corners, in which
-        // case it is faster to do array lookups
+        // before I settled on using array lookups I was testing if
+        // conditionals gave faster performance.  They did, but
+        // 346ms vs 358ms didn't seem worth it for the uglier code
+        // I left the code commented out in case I wanted to test more
 
         //front edge
-        if(edges[3].orient == front) edges[0].orient = right;
+        //if(edges[3].orient == front) edges[0].orient = right;
+        //else edges[0].orient = edges[3].orient;
+        edges[0].orient = nextFaceYrotCount[ edges[3].orient ];
 
         //front left corner
         corners[0].orient = nextFaceYrotCount[ corners[3].orient ];
 
         //left edge
-        if(edges[2].orient == left) edges[3].orient = front;
-
+        //if(edges[2].orient == left) edges[3].orient = front;
+        //else edges[3].orient = edges[2].orient;
+        edges[3].orient = nextFaceYrotCount[ edges[2].orient ];
+        
         //back left corner
         corners[3].orient = nextFaceYrotCount[ corners[2].orient ];
 
         //back edge
-        if(edges[1].orient == back) edges[2].orient = left;
+        //if(edges[1].orient == back) edges[2].orient = left;
+        //else edges[2].orient = edges[1].orient;
+        edges[2].orient = nextFaceYrotCount[ edges[1].orient ];
        
         //back right corner 
         corners[2].orient = nextFaceYrotCount[ corners[1].orient ];
     
         //right edge
-        if(tempEdge == right) edges[1].orient = back;
+        //if(tempEdge == right) edges[1].orient = back;
+        //else edges[1].orient = tempEdge;
+        edges[1].orient = nextFaceYrotCount[ tempEdge ];
     
         //front right corner
         corners[1].orient = nextFaceYrotCount[ tempCorner];
-        
+      */  
     } 
     //==================================================================
     //==================================================================
@@ -464,53 +483,104 @@ namespace PRETZEL
     //==================================================================
 
 
-    //return here
     //==================================================================
     //==================================================================
     void rubiks::rotDcount()
     {
 
         //test function
-        rotCornerNumsToRight( 0, 1, 2, 3);
-        rotEdgeNumsToRight(0, 1, 2, 3);
+        rotCornerNumsToRight( 7, 6, 5, 4);
+        rotEdgeNumsToRight( 11, 10, 9 ,8 );
 
-        Face tempCorner = corners[0].orient;
-        Face tempEdge = edges[0].orient;
+        Face tempCorner = corners[4].orient;
+        Face tempEdge = edges[8].orient;
 
-        // left -> front -> right -> back -> ...
+        //back edge -> right edge
+        edges[8].orient = nextFaceYrotClock[ edges[9].orient ];
 
-        //it's faster to have 1 conditional to determine next orientation,
-        // however, we would need to 2 conditionals for corners, in which
-        // case it is faster to do array lookups
+        //back right corner -> front right corner
+        corners[4].orient = nextFaceYrotClock[ corners[5].orient ];
 
-        //front edge
-        if(edges[3].orient == front) edges[0].orient = right;
+        //left edge -> back edge
+        edges[9].orient = nextFaceYrotClock[ edges[10].orient ];
 
-        //front left corner
-        corners[0].orient = nextFaceYrotCount[ corners[3].orient ];
+        //back left corner -> back right corner
+        corners[5].orient = nextFaceYrotClock[ corners[6].orient ];
 
-        //left edge
-        if(edges[2].orient == left) edges[3].orient = front;
-
-        //back left corner
-        corners[3].orient = nextFaceYrotCount[ corners[2].orient ];
-
-        //back edge
-        if(edges[1].orient == back) edges[2].orient = left;
+        //front edge -> left edge
+        edges[10].orient = nextFaceYrotClock[ edges[11].orient ];
        
-        //back right corner 
-        corners[2].orient = nextFaceYrotCount[ corners[1].orient ];
+        //front left corner -> back left corner
+        corners[6].orient = nextFaceYrotClock[ corners[7].orient ];
     
-        //right edge
-        if(tempEdge == right) edges[1].orient = back;
+        //right edge -> front edge
+        edges[11].orient = nextFaceYrotClock[ tempEdge ];
     
-        //front right corner
-        corners[1].orient = nextFaceYrotCount[ tempCorner];
+        //front right corner -> front left corner
+        corners[7].orient = nextFaceYrotClock[ tempCorner];
         
     } 
     //==================================================================
     //==================================================================
 
+
+    //==================================================================
+    //==================================================================
+    void rubiks::rotDtwice()
+    {
+        rotDcount();
+    }
+    //==================================================================
+    //==================================================================
+
+
+    //==================================================================
+    //==================================================================
+    void rubiks::rotDclock()
+    {
+        rotDcount();
+        rotDcount();
+        rotDcount();
+    }
+    //==================================================================
+    //==================================================================
+
+
+    //==================================================================
+    //==================================================================
+    void rubiks::rotLcount()
+    {
+
+        //test function
+        rotCornerNumsToRight( 3, 2, 6, 7);
+        rotEdgeNumsToRight( 2, 6, 10, 7 );
+
+        Face tempCorner = corners[2].orient;
+        Face tempEdge = edges[2].orient;
+
+        // front edge -> up edge 
+        edges[2].orient = nextFaceXrotClock[ edges[7].orient ];
+
+        // front up corner -> back up corner
+        corners[2].orient = nextFaceXrotClock[ corners[3].orient ];
+
+        //down edge -> front edge
+        edges[7].orient = nextFaceXrotClock[ edges[10].orient ];
+
+        //front down corner -> back down corner
+        corners[5].orient = nextFaceXrotClock[ corners[6].orient ];
+
+        edges[10].orient = nextFaceXrotClock[ edges[11].orient ];
+       
+        corners[6].orient = nextFaceXrotClock[ corners[7].orient ];
+    
+        edges[11].orient = nextFaceXrotClock[ tempEdge ];
+    
+        corners[7].orient = nextFaceXrotClock[ tempCorner];
+        
+    } 
+    //==================================================================
+    //==================================================================
 
 
     //==================================================================
@@ -521,40 +591,52 @@ namespace PRETZEL
         //test function
         rotCornerNumsToRight( 1, 0, 4, 5);
         rotEdgeNumsToRight(0, 4, 8, 5);
-
+        rotCornerOrientsToRight(nextFaceXrotCount, 1, 0, 4, 5);
+        rotEdgeOrientsToRight(nextFaceXrotCount, 0, 4, 8, 5);
+/*
         Face tempCorner = corners[0].orient;
         Face tempEdge = edges[0].orient;
 
         
         // up -> front -> down -> back 
-        //it's faster to have 1 conditional to determine next orientation,
-        // however, we would need to 2 conditionals for corners, in which
-        // case it is faster to do array lookups
+
+        // before I settled on using array lookups I was testing if
+        // conditionals gave faster performance.  They did, but
+        // 346ms vs 358ms didn't seem worth it for the uglier code
+        // I left the code commented out in case I wanted to test more
 
         //up back corner
         corners[0].orient = nextFaceXrotCount[ corners[1].orient];
 
         //back edge 
-        if(edges[5].orient == back) edges[0].orient = up;
+        //if(edges[5].orient == back) edges[0].orient = up;
+        //else edges[0].orient = edges[5].orient;
+        edges[0].orient = nextFaceXrotCount[ edges[5].orient];
 
         //back down corner
         corners[1].orient = nextFaceXrotCount[ corners[5].orient];
 
         //down edge
-        if(corners[8].orient == down) edges[5].orient = back;
+        //if(edges[8].orient == down) edges[5].orient = back; 
+        //else edges[5].orient = edges[8].orient;
+        edges[5].orient = nextFaceXrotCount[ edges[8].orient];
 
         //front down corner
         corners[5].orient = nextFaceXrotCount[ corners[4].orient];
 
         //front edge
-        if(edges[4].orient == front) edges[8].orient = down;
+        //if(edges[4].orient == front) edges[8].orient = down;
+        //else edges[8].orient = edges[4].orient;
+        edges[8].orient = nextFaceXrotCount[ edges[4].orient];
 
         //up front corner
         corners[4].orient = nextFaceXrotCount[ tempCorner];
 
         //up edge
-        if(tempEdge == up) edges[4].orient = front;
-        
+        //if(tempEdge == up) edges[4].orient = front;
+        //else edges[4].orient = tempEdge;
+        edges[4].orient = nextFaceXrotCount[ tempEdge ];
+ */       
     }
     //==================================================================
     //==================================================================
@@ -758,6 +840,10 @@ namespace PRETZEL
     ////==================================================================
     ////==================================================================
 
+    int rubiks::returnCubeNumAtCorner(int cubeInd) const
+    {
+        return corners[ cubeInd].cubeNum;
+    }
 
 
 
@@ -811,6 +897,41 @@ namespace PRETZEL
         edges[c].cubeNum = edges[b].cubeNum;
         edges[b].cubeNum = edges[a].cubeNum;
         edges[a].cubeNum = temp;
+        
+    }
+    //==================================================================
+    //==================================================================
+
+
+    //==================================================================
+    //==================================================================
+    void rubiks::rotCornerOrientsToRight( Face nextFaceLookup[], 
+                                          int a, int b, int c, int d)
+    {
+        Face temp = nextFaceLookup[corners[d].orient];
+            
+        corners[d].orient = nextFaceLookup[corners[c].orient];
+        corners[c].orient = nextFaceLookup[corners[b].orient];
+        corners[b].orient = nextFaceLookup[corners[a].orient];
+        corners[a].orient = temp;
+        
+    }
+    //==================================================================
+    //==================================================================
+
+
+
+    //==================================================================
+    //==================================================================
+    void rubiks::rotEdgeOrientsToRight( Face nextFaceLookup[], 
+                                        int a, int b, int c, int d)
+    {
+        Face temp = nextFaceLookup[edges[d].orient];
+            
+        edges[d].orient = nextFaceLookup[edges[c].orient];
+        edges[c].orient = nextFaceLookup[edges[b].orient];
+        edges[b].orient = nextFaceLookup[edges[a].orient];
+        edges[a].orient = temp;
         
     }
     //==================================================================
@@ -984,11 +1105,11 @@ namespace PRETZEL
     //==================================================================
     //==================================================================
     std::string rubiks::returnOrientStr(const Cube cubeArray[], 
-                                        int cubeNum            ) const
+                                        int cubeInd            ) const
     {
         std::string orientStr;
 
-        switch(cubeArray[cubeNum].orient){
+        switch(cubeArray[cubeInd].orient){
             case up: orientStr = "U";
                      break;
             case down: orientStr = "D";
@@ -1014,11 +1135,11 @@ namespace PRETZEL
     //==================================================================
     void rubiks::addToPrintBufCube( PrintToCoord &stringBuffer, 
                                     const Cube cubeArray[], 
-                                    int cubeNum, 
+                                    int cubeInd, 
                                     int col, 
                                     int row             ) const
     {
-        std::string cubeNumStr = std::to_string(cubeArray[cubeNum].cubeNum);
+        std::string cubeNumStr = std::to_string(cubeArray[cubeInd].cubeNum);
         stringBuffer.addStr( cubeNumStr, 
                             col,
                             row,
@@ -1027,7 +1148,7 @@ namespace PRETZEL
                              col+1,
                              row,
                              PrintToCoord::alignLeft);
-        stringBuffer.addStr( returnOrientStr( cubeArray, cubeNum),
+        stringBuffer.addStr( returnOrientStr( cubeArray, cubeInd),
                              col+2,
                              row,
                              PrintToCoord::alignLeft);
