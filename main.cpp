@@ -15,14 +15,26 @@ int main()
     //r1.rotUcount();
     //r1.rotUcount();
     //r1.rotUcount(); // tested ok
-    //r1.rotRcount();
-    //r1.rotRcount();
-    //r1.rotRcount();
-    //r1.rotRcount(); // tested ok
     //r1.rotDcount();
     //r1.rotDcount();
     //r1.rotDcount();
     //r1.rotDcount(); //tested ok
+    //r1.rotLcount();
+    //r1.rotLcount();
+    //r1.rotLcount();
+    //r1.rotLcount(); //tested ok
+    //r1.rotRcount();
+    //r1.rotRcount();
+    //r1.rotRcount();
+    //r1.rotRcount(); // tested ok
+    //r1.rotFcount(); 
+    //r1.rotFcount(); 
+    //r1.rotFcount(); 
+    //r1.rotFcount(); //tested ok
+    //r1.rotBcount();
+    //r1.rotBcount();
+    //r1.rotBcount();
+    //r1.rotBcount(); //tested ok
     r1.print();
 
     auto startTime = std::chrono::high_resolution_clock::now();

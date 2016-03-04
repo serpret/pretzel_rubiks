@@ -128,8 +128,8 @@ namespace PRETZEL
     {
 
         public:
-            static const int NUM_CORNER_CUBES{8};// = 8;
-            static const int NUM_EDGE_CUBES{12};// = 12;
+            static const int NUM_CORNER_CUBES{8};
+            static const int NUM_EDGE_CUBES{12};
 
             //rubiks cube has 6 faces
             enum Face { up      = 0,
@@ -140,6 +140,14 @@ namespace PRETZEL
                         back    = 5,
                         numFaces,
                         emptyFace      };
+
+            //each face can be rotated 90 degrees counter-clockwise or
+            //clockwise, or 180 degrees which we call twice.
+            enum Rot { count = 0,
+                       twice = 1,
+                       clock = 2,
+                       numRots,
+                       emptyRot  };
 
             struct Cube{
                 int cubeNum;
@@ -152,17 +160,6 @@ namespace PRETZEL
             Face nextFaceYrotClock[numFaces];
             Face nextFaceZrotClock[numFaces];
             Face nextFaceZrotCount[numFaces];
-
-            //each face can be rotated 90 degrees counter-clockwise or
-            //clockwise, or 180 degrees which we call twice.
-            enum Rot { count = 0,
-                           twice = 1,
-                           clock = 2,
-                           numRots,
-                           emptyRot  };
-
-
-            
 
             typedef std::vector<std::pair< Face, Rot>> RotRecordType;
 
@@ -178,29 +175,40 @@ namespace PRETZEL
             void rotUclock(); //this function is currently unoptimized
 
             void rotDcount();
-            void rotDtwice();
-            void rotDclock();
+            void rotDtwice(); //this function is currently unoptimized
+            void rotDclock(); //this function is currently unoptimized
 
-            void rotLcount();
-            void rotLtwice();
-            void rotLclock();
+            void rotLcount(); 
+            void rotLtwice(); //this function is currently unoptimized
+            void rotLclock(); //this function is currently unoptimized
 
-            void rotRcount();
-            void rotRtwice();
-            void rotRclock();
+            void rotRcount(); 
+            void rotRtwice(); //this function is currently unoptimized
+            void rotRclock(); //this function is currently unoptimized
 
-            void rotFcount();
-            void rotFtwice();
-            void rotFclock();
+            void rotFcount(); 
+            void rotFtwice(); //this function is currently unoptimized
+            void rotFclock(); //this function is currently unoptimized
 
-            void rotBcount();
-            void rotBtwice();
-            void rotBclock();
+            void rotBcount(); 
+            void rotBtwice(); //this function is currently unoptimized
+            void rotBclock(); //this function is currently unoptimized
+
+            std::vector<std::pair<int,RotRecordType>> 
+                findHighestValueRotRecs( int numRotRecsToKeep, int numSteps);
+
+            void recurseHighestValue( int (rubiks::*valueFunc)(),
+                                      int stepsToTake,
+                                      int curStepNum,
+                                      std::vector<RotRecordType> &topRotRecs,
+                                      std::vector<int> &topValues,
+                                      int numRotRecsToKeep);
+
+            int valueExactSolution();
 
             void scramble(int steps);
 
             int returnCubeNumAtCorner(int) const;
-            //Rot invRot(Rot );
             //void inc( Face&);
             //void inc( Rot& );
 
@@ -210,23 +218,40 @@ namespace PRETZEL
             void rotEdgeNumsToRight(    int, int, int, int);           
             void rotCornerOrientsToRight(   Face[],   int, int, int, int);
             void rotEdgeOrientsToRight(     Face[],   int, int, int, int);
-            //void addRotStep( Face&, Rot&);
-            //void removeRotStep( Face&, Rot&);
-            //void pushRotStep( Face, Rot, vector<Face>&, vector<Rot>&);
-            //void popRotStep( Face&, Rot&, vector<Face>&, vector<Rot>&);
-            //void pushRotStep( Face, Rot );
-            //void popRotStep( Face&, Rot&);
-            //void popRotStep();
-            //void travelToStep(int); //helper function for solveBreadthRecursion
-            //bool isLastRotInStep(); //helper function for solveBreadthRecursion
-            //void moveToNextStep();  //helper function for solveBreadthRecursion
             std::string returnOrientStr( const Cube[], int) const;
             void addToPrintBufCube( PrintToCoord&, const Cube[], 
                                     int, int, int) const;
+            //void recurseHighestValue( int (rubiks::*valueFunc)(),
+            //                          int stepsToTake,
+            //                          int curStepNum,
+            //                          std::vector<RotRecordType> &topRotRecs,
+            //                          std::vector<int> &topValues,
 
+            void recurseNextStep( void (rubiks::*rotFunc)(),
+                                  Face currentFace,
+                                  int (rubiks::*valueFunc)(),
+                                  int stepsToTake,
+                                  int curStepNum,
+                                  std::vector<RotRecordType> &topRotRecs,
+                                  std::vector<int> &topValues,
+                                  int numRotRecsToKeep);
+            void recurseValueLastStep( int value,
+                                  Face curFace,
+                                  Rot curRot,
+                                  std::vector<RotRecordType> &topRotRecs,
+                                  std::vector<int> &topValues,
+                                  int numRotRecsToKeep);
+            void recurseValueCurStep( int value,
+                                  std::vector<RotRecordType> &topRotRecs,
+                                  std::vector<int> &topValues,
+                                  int numRotRecsToKeep);
+                                  
 
             Cube corners[NUM_CORNER_CUBES];
             Cube edges[NUM_EDGE_CUBES];
+
+            Face cornerOrientSolutions[NUM_CORNER_CUBES];
+            Face edgeOrientSolutions[NUM_EDGE_CUBES];
 
             RotRecordType rotRecord;
 

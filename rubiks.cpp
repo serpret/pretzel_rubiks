@@ -40,6 +40,8 @@ namespace PRETZEL
     using std::cout;
     using std::endl;
     using std::setw;
+    using std::pair;
+    using std::vector;
       
 
 
@@ -78,7 +80,8 @@ namespace PRETZEL
 
             if( i < 4) corners[i].orient = up;
             else corners[i].orient = down; 
-            
+
+            cornerOrientSolutions[i] = corners[i].orient;            
         }
 
         for(int i = 0; i < NUM_EDGE_CUBES; ++i){
@@ -89,23 +92,12 @@ namespace PRETZEL
             else if(i < 6) edges[i].orient = right;
             else if(i < 8) edges[i].orient = left;
             else edges[i].orient = down;
+        
+            edgeOrientSolutions[i] = edges[i].orient;
+            
         }
 
-        //testing rotUcount
-        //edges[0].orient = right;
-        //corners[0].orient = front;
-        //corners[1].orient = back;
 
-        //testing rotRcount (use rotUcount testing as well)
-        //corners[0].orient = right;
-
-        //testing rotDcount
-        corners[5].orient = back;
-        edges[8].orient = right;
-        corners[4].orient = front;
-
-        //next face from current face rotations for x,y,z axis
-        // clockwise rotations are the same as 3 counter clockwise rotations
         nextFaceXrotCount[up]    = front;
         nextFaceXrotCount[down]  = back;
         nextFaceXrotCount[left]  = left;
@@ -410,49 +402,6 @@ namespace PRETZEL
         rotEdgeNumsToRight(0, 1, 2, 3);
         rotCornerOrientsToRight(nextFaceYrotCount, 0, 1, 2, 3);
         rotEdgeOrientsToRight(nextFaceYrotCount,0, 1, 2, 3);
-
-     /*
-        Face tempCorner = corners[0].orient;
-        Face tempEdge = edges[0].orient;
-
-        // left -> front -> right -> back -> ...
-        // before I settled on using array lookups I was testing if
-        // conditionals gave faster performance.  They did, but
-        // 346ms vs 358ms didn't seem worth it for the uglier code
-        // I left the code commented out in case I wanted to test more
-
-        //front edge
-        //if(edges[3].orient == front) edges[0].orient = right;
-        //else edges[0].orient = edges[3].orient;
-        edges[0].orient = nextFaceYrotCount[ edges[3].orient ];
-
-        //front left corner
-        corners[0].orient = nextFaceYrotCount[ corners[3].orient ];
-
-        //left edge
-        //if(edges[2].orient == left) edges[3].orient = front;
-        //else edges[3].orient = edges[2].orient;
-        edges[3].orient = nextFaceYrotCount[ edges[2].orient ];
-        
-        //back left corner
-        corners[3].orient = nextFaceYrotCount[ corners[2].orient ];
-
-        //back edge
-        //if(edges[1].orient == back) edges[2].orient = left;
-        //else edges[2].orient = edges[1].orient;
-        edges[2].orient = nextFaceYrotCount[ edges[1].orient ];
-       
-        //back right corner 
-        corners[2].orient = nextFaceYrotCount[ corners[1].orient ];
-    
-        //right edge
-        //if(tempEdge == right) edges[1].orient = back;
-        //else edges[1].orient = tempEdge;
-        edges[1].orient = nextFaceYrotCount[ tempEdge ];
-    
-        //front right corner
-        corners[1].orient = nextFaceYrotCount[ tempCorner];
-      */  
     } 
     //==================================================================
     //==================================================================
@@ -489,35 +438,11 @@ namespace PRETZEL
     {
 
         //test function
-        rotCornerNumsToRight( 7, 6, 5, 4);
-        rotEdgeNumsToRight( 11, 10, 9 ,8 );
+        rotCornerNumsToRight( 7,  6, 5, 4);
+        rotEdgeNumsToRight(  11, 10, 9, 8 );
+        rotCornerOrientsToRight(nextFaceYrotClock,  7,  6, 5, 4);
+        rotEdgeOrientsToRight(nextFaceYrotClock,   11, 10, 9, 8);
 
-        Face tempCorner = corners[4].orient;
-        Face tempEdge = edges[8].orient;
-
-        //back edge -> right edge
-        edges[8].orient = nextFaceYrotClock[ edges[9].orient ];
-
-        //back right corner -> front right corner
-        corners[4].orient = nextFaceYrotClock[ corners[5].orient ];
-
-        //left edge -> back edge
-        edges[9].orient = nextFaceYrotClock[ edges[10].orient ];
-
-        //back left corner -> back right corner
-        corners[5].orient = nextFaceYrotClock[ corners[6].orient ];
-
-        //front edge -> left edge
-        edges[10].orient = nextFaceYrotClock[ edges[11].orient ];
-       
-        //front left corner -> back left corner
-        corners[6].orient = nextFaceYrotClock[ corners[7].orient ];
-    
-        //right edge -> front edge
-        edges[11].orient = nextFaceYrotClock[ tempEdge ];
-    
-        //front right corner -> front left corner
-        corners[7].orient = nextFaceYrotClock[ tempCorner];
         
     } 
     //==================================================================
@@ -546,41 +471,46 @@ namespace PRETZEL
     //==================================================================
 
 
+
     //==================================================================
     //==================================================================
     void rubiks::rotLcount()
     {
 
-        //test function
         rotCornerNumsToRight( 3, 2, 6, 7);
-        rotEdgeNumsToRight( 2, 6, 10, 7 );
-
-        Face tempCorner = corners[2].orient;
-        Face tempEdge = edges[2].orient;
-
-        // front edge -> up edge 
-        edges[2].orient = nextFaceXrotClock[ edges[7].orient ];
-
-        // front up corner -> back up corner
-        corners[2].orient = nextFaceXrotClock[ corners[3].orient ];
-
-        //down edge -> front edge
-        edges[7].orient = nextFaceXrotClock[ edges[10].orient ];
-
-        //front down corner -> back down corner
-        corners[5].orient = nextFaceXrotClock[ corners[6].orient ];
-
-        edges[10].orient = nextFaceXrotClock[ edges[11].orient ];
-       
-        corners[6].orient = nextFaceXrotClock[ corners[7].orient ];
-    
-        edges[11].orient = nextFaceXrotClock[ tempEdge ];
-    
-        corners[7].orient = nextFaceXrotClock[ tempCorner];
+        rotEdgeNumsToRight(   2, 6, 10, 7 );
+        rotCornerOrientsToRight(nextFaceXrotClock, 3, 2, 6, 7 );
+        rotEdgeOrientsToRight(nextFaceXrotClock,   2, 6, 10, 7 );
         
     } 
     //==================================================================
     //==================================================================
+
+
+
+    //==================================================================
+    //==================================================================
+    void rubiks::rotLtwice()
+    {
+        rotLcount();
+        rotLcount();
+    }
+    //==================================================================
+    //==================================================================
+
+
+
+    //==================================================================
+    //==================================================================
+    void rubiks::rotLclock()
+    {
+        rotLcount();
+        rotLcount();
+        rotLcount();
+    }
+    //==================================================================
+    //==================================================================
+
 
 
     //==================================================================
@@ -588,55 +518,10 @@ namespace PRETZEL
     void rubiks::rotRcount()
     {
 
-        //test function
         rotCornerNumsToRight( 1, 0, 4, 5);
         rotEdgeNumsToRight(0, 4, 8, 5);
         rotCornerOrientsToRight(nextFaceXrotCount, 1, 0, 4, 5);
         rotEdgeOrientsToRight(nextFaceXrotCount, 0, 4, 8, 5);
-/*
-        Face tempCorner = corners[0].orient;
-        Face tempEdge = edges[0].orient;
-
-        
-        // up -> front -> down -> back 
-
-        // before I settled on using array lookups I was testing if
-        // conditionals gave faster performance.  They did, but
-        // 346ms vs 358ms didn't seem worth it for the uglier code
-        // I left the code commented out in case I wanted to test more
-
-        //up back corner
-        corners[0].orient = nextFaceXrotCount[ corners[1].orient];
-
-        //back edge 
-        //if(edges[5].orient == back) edges[0].orient = up;
-        //else edges[0].orient = edges[5].orient;
-        edges[0].orient = nextFaceXrotCount[ edges[5].orient];
-
-        //back down corner
-        corners[1].orient = nextFaceXrotCount[ corners[5].orient];
-
-        //down edge
-        //if(edges[8].orient == down) edges[5].orient = back; 
-        //else edges[5].orient = edges[8].orient;
-        edges[5].orient = nextFaceXrotCount[ edges[8].orient];
-
-        //front down corner
-        corners[5].orient = nextFaceXrotCount[ corners[4].orient];
-
-        //front edge
-        //if(edges[4].orient == front) edges[8].orient = down;
-        //else edges[8].orient = edges[4].orient;
-        edges[8].orient = nextFaceXrotCount[ edges[4].orient];
-
-        //up front corner
-        corners[4].orient = nextFaceXrotCount[ tempCorner];
-
-        //up edge
-        //if(tempEdge == up) edges[4].orient = front;
-        //else edges[4].orient = tempEdge;
-        edges[4].orient = nextFaceXrotCount[ tempEdge ];
- */       
     }
     //==================================================================
     //==================================================================
@@ -652,198 +537,153 @@ namespace PRETZEL
     //==================================================================
     //==================================================================
 
-    ////==================================================================
-    ////==================================================================
-    //void rubiks::rotRcount()
-    //{
-
-    //    //test function
-    //    rotCornerNumsToRight( 1, 0, 4, 5);
-    //    rotEdgeNumsToRight(0, 4, 8, 5);
-
-    //    Face tempCorner = corners[0].orient;
-    //    Face tempEdge = edges[0].orient;
-
-    //    
-    //    // up -> front -> down -> back 
-    //    //rotation corners
-
-    //    //up back corner
-    //    //if(corners[1].orient == up) corners[0].orient = front;
-    //    //else if(corners[1].orient == back) corners[0].orient = up;
-    //    corners[0].orient = nextFaceXrotCount[ corners[1].orient];
-
-    //    //back edge 
-    //    if(edges[5].orient == back) edges[0].orient = up;
-    //    //edges[0].orient = nextFaceXrotCount[ edges[5].orient];
-
-    //    //back down corner
-    //    //if(corners[5].orient == down) corners[1].orient = back;
-    //    //else if(corners[5].orient == back) corners[1].orient = up;
-    //    corners[1].orient = nextFaceXrotCount[ corners[5].orient];
-
-    //    //down edge
-    //    if(corners[8].orient == down) edges[5].orient = back;
-    //    //edges[5].orient = nextFaceXrotCount[ edges[8].orient];
-
-    //    //front down corner
-    //    //if(corners[4].orient == front) corners[5].orient = down;
-    //    //else if(corners[4].orient == down) corners[5].orient = back;
-    //    corners[5].orient = nextFaceXrotCount[ corners[4].orient];
-
-    //    //front edge
-    //    if(edges[4].orient == front) edges[8].orient = down;
-    //    //edges[8].orient = nextFaceXrotCount[ edges[4].orient];
-
-    //    //up front corner
-    //    //if(tempCorner == up) corners[4].orient = front;
-    //    //else if(tempCorner == front) corners[4].orient = down;
-    //    corners[4].orient = nextFaceXrotCount[ tempCorner];
-
-    //    //up edge
-    //    if(tempEdge == up) edges[4].orient = front;
-    //    //edges[4].orient = nextFaceXrotCount[ tempEdge];
-    //    
-    //} 
-    ////==================================================================
-    ////==================================================================
 
 
-
-
-
-
-    // 1) travel to step to test (taking initial rotations)
-    // 2) test the 18 rotations at that step (return success if true)
-    // 3) if the current step being tested is the final rotation in
-    //      the current iteration then remove the step.  If no more
-    //      steps to be tested return failure
-    // 4) repeat 3) until we're at a step with untested rotations
-    // 5) iterate the step and start again from 1)
-
-    // numSteps must be 1 or greater
     //==================================================================
     //==================================================================
-    //bool rubiks::findHighestValueRoute( bool (rubiks::*matchFunc)(), 
-    //                                    int numSteps)
-    //{
+    void rubiks::rotRclock()
+    {
+        rotRcount();
+        rotRcount();
+        rotRcount();
+    }
+    //==================================================================
+    //==================================================================
 
-    //    int initialStep = rotRecordFace.size(); 
-    //    int finalStep = initialStep + numSteps;
 
-    //    Face    currentFace = up;
-    //    Rot currentRot = clock;
-   
-    //    while(true){ 
-    //        //travel to desired step number
-    //        travelToStep( finalStep );
-    //       
-    //        //printRecord(); 
 
-    //        //begin first rotation
-    //        rotUcount();
+    //==================================================================
+    //==================================================================
+    void rubiks::rotFcount()
+    {
+        rotCornerNumsToRight( 0, 3, 7, 4 );
+        rotEdgeNumsToRight(   3, 7, 11, 4 );
+        rotCornerOrientsToRight(nextFaceZrotCount, 0, 3, 7, 4 );
+        rotEdgeOrientsToRight(  nextFaceZrotCount, 3, 7, 11, 4);
+    }
+    //==================================================================
+    //==================================================================
 
-    //        //perform 1st->2nd rotation transform
-    //        rotUcount();
-    //        
-    //        //perform 2nd->3rd rotation transform
-    //        rotUcount();
 
-    //        //perform 3rd->4th rotation transform ( up clock -> down counter)
-    //        rotUcount();
-    //        rotDcount();
+    //==================================================================
+    //==================================================================
+    void rubiks::rotFtwice()
+    {
+        rotFcount();
+        rotFcount();
+    }
+    //==================================================================
+    //==================================================================
 
-    //        //perform 4th->5th rotation transform
-    //        rotDcount();
-    //        
-    //        //perform 5th->6th rotation transform
-    //        rotDcount();
 
-    //        //perform 6th->7th rotation transform ( down clock -> left count) 
-    //        rotDcount();    //this can be optimized
-    //        rotLcount();    //this can be optimized
+    //==================================================================
+    //==================================================================
+    void rubiks::rotFclock()
+    {
+        rotFcount();
+        rotFcount();
+        rotFcount();
+    }
+    //==================================================================
+    //==================================================================
 
-    //        //perform 7th->8th rotation transform
-    //        rotLcount();
-    //        
-    //        //perform 8th->9th rotation transform
-    //        rotLcount();
 
-    //        //perform 9th->10th rot transform ( left clock -> right count) 
-    //        rotLcount();    //this can be optimized
-    //        rotRcount();    //this can be optimized
 
-    //        //perform 10th->11th rotation transform
-    //        rotRcount();
+    //==================================================================
+    //==================================================================
+    void rubiks::rotBcount()
+    {
+        
+        rotCornerNumsToRight( 1, 5, 6, 2);
+        rotEdgeNumsToRight(   5, 9, 6, 1);
+        rotCornerOrientsToRight(nextFaceZrotClock, 1, 5, 6, 2);
+        rotEdgeOrientsToRight(  nextFaceZrotClock, 5, 9, 6, 1);
+    }
+    //==================================================================
+    //==================================================================
 
-    //        //perform 11th->12th rotation transform
-    //        rotRcount();
 
-    //        //perform 12th->13th rot transform ( right clock -> front count) 
-    //        rotRcount();   //can be optimized 
-    //        rotFcount();   //can be optimized
 
-    //        //perform 13th->14th rotation transform
-    //        rotFcount();
-    //        
-    //        //perform 14th->15th rotation transform
-    //        rotFcount();
+    //==================================================================
+    //==================================================================
+    void rubiks::rotBtwice()
+    {
+        rotBcount();
+        rotBcount();
+    }
+    //==================================================================
+    //==================================================================
 
-    //        //perform 15th->16th rot transform ( front clock -> back count) 
-    //        rotFcount();    
-    //        rotBcount();  
 
-    //        //perform 16th->17th rotation transform
-    //        rotBcount();
-    //        
-    //        //perform 17th->18th rotation transform
-    //        rotBcount();
+    //==================================================================
+    //==================================================================
+    void rubiks::rotBclock()
+    {
+        rotBcount();
+        rotBcount();
+        rotBcount();
+    }
+    //==================================================================
+    //==================================================================
 
-    //        //return to original form at this step
-    //        rotBcount();
 
-    //        //remove steps till we get to a step where not all
-    //        //of the combos have been tested yet
-    //        while(isLastRotInStep() )
-    //        {
-    //            if( rotRecordFace.size() == (initialStep+1) ){
-    //                popRotStep();
-    //                return 0;
-    //            } else{ 
-    //                popRotStep( currentFace, currentRot);
-    //            }
-    //        }
-    //        
-    //        //try next step, this cannot be the last step (guaranteed above)
-    //        moveToNextStep();
+    //==================================================================
+    //==================================================================
+    vector<pair<int,rubiks::RotRecordType>> 
+        rubiks::findHighestValueRotRecs(int numRotRecsToKeep, int numSteps )
+    {
+        vector<RotRecordType> highestRotRecs;
+        vector<int>           highestValues;
+        highestValues.resize(numRotRecsToKeep);
+        highestRotRecs.resize(numRotRecsToKeep);
 
-    //    }
-    //    
-    //}
-    ////==================================================================
-    ////==================================================================
+        //pair<Face, Rot> emptyRot(emptyFace, emptyRot);
+        //pair<Face, Rot> firstRotation ( currentFace, currentRot);
+        //RotRecordType emptyRotRec(emptyRot);
+        recurseHighestValue( &rubiks::valueExactSolution,
+                             numSteps,
+                             0,
+                             highestRotRecs,
+                             highestValues,
+                             numRotRecsToKeep);
+        
+        
+    }
+    //==================================================================
+    //==================================================================
+
+
+    //==================================================================
+    //==================================================================
+    int rubiks::valueExactSolution()
+    {
+        for(int i = 0; i < NUM_CORNER_CUBES; ++i)
+        {
+            if( corners[i].cubeNum != i) return 0;
+            if( corners[i].orient != cornerOrientSolutions[i]) return 0;
+        }
+    
+        for(int i  = 0; i < NUM_EDGE_CUBES; ++i)
+        {
+            if( edges[i].cubeNum != i) return 0;
+            if( edges[i].orient != edgeOrientSolutions[i]) return 0;
+        }
+        return 1;
+    }
+    //==================================================================
+    //==================================================================
 
     
 
-    ////==================================================================
-    ////==================================================================
-    //rubiks::Rot rubiks::invRot(Rot invThis)
-    //{
-    //    Rot returnValue;
 
-    //    if      (invThis == count) returnValue = clock;
-    //    else if (invThis == clock) returnValue = count;
-    //    else                           returnValue = twice;
-
-    //    return returnValue;
-    //}
-    ////==================================================================
-    ////==================================================================
-
+    //==================================================================
+    //==================================================================
     int rubiks::returnCubeNumAtCorner(int cubeInd) const
     {
         return corners[ cubeInd].cubeNum;
     }
+    //==================================================================
+    //==================================================================
 
 
 
@@ -939,168 +779,6 @@ namespace PRETZEL
 
 
 
-    ////==================================================================
-    ////==================================================================
-    //void rubiks::addRotStep( Face faceTypePush, Rot rotTypePush)
-    //{
-    ////    if(!rotRecordFace.empty() ){
-    //        if( rotRecordFace.back() == faceTypePush){
-    //            inc( faceTypePush);
-    //            //faceTypePush = static_cast<Face>(faceTypePush + 1);
-    //        }
-    ////    }
-    //    rotRecordFace.push_back(faceTypePush);    
-    //    rotRecordType.push_back(rotTypePush);    
-    //    (this->*rotFuncPtr[faceTypePush][rotTypePush])();
-    //}
-    ////==================================================================
-    ////==================================================================
-
-
-    ////==================================================================
-    ////==================================================================
-    //void rubiks::removeRotStep( Face& faceTypePop, Rot& rotTypePop)
-    //{
-    //    Face topFaceRot = rotRecordFace.back();
-    //    Rot topTypeRotInv = invRot(rotRecordType.back());
-    //    (this->*rotFuncPtr[ topFaceRot ][ topTypeRotInv])();
-    //    faceTypePop = rotRecordFace.back();
-    //    rotTypePop  = rotRecordType.back();
-    //    rotRecordFace.pop_back();
-    //    rotRecordType.pop_back();
-    //}
-    ////==================================================================
-    ////==================================================================
-
-
-
-    ////==================================================================
-    ////==================================================================
-    //void rubiks::pushRotStep( Face rotFacePush, Rot rotTypePush)
-    //{
-    //    rotRecordFace.push_back(rotFacePush);
-    //    rotRecordType.push_back(rotTypePush);
-    //    (this->*rotFuncPtr[ rotFacePush][ rotTypePush ])();
-    //}
-    ////==================================================================
-    ////==================================================================
-
-
-
-    ////==================================================================
-    ////==================================================================
-    //void rubiks::popRotStep( Face &rotFacePop, Rot &rotTypePop)
-    //{
-    //    //if(  rotRecordFace.back() != emptyFace){
-    //        Rot invOfLastRot = invRot( rotRecordType.back() );
-    //        rotFacePop = rotRecordFace.back();
-    //        rotTypePop = rotRecordType.back();
-    //        (this->*rotFuncPtr[ rotFacePop ][ invOfLastRot])();
-    //    //}
-    //    rotRecordFace.pop_back();
-    //    rotRecordType.pop_back();
-    //}
-    ////==================================================================
-    ////==================================================================
-
-
-
-    ////==================================================================
-    ////==================================================================
-    //void rubiks::popRotStep()
-    //{
-    //    //if(  rotRecordFace.back() != emptyFace){
-    //        Rot invOfLastRot = invRot( rotRecordType.back() );
-    //        (this->*rotFuncPtr[ rotRecordFace.back() ][ invOfLastRot])();
-    //        rotRecordFace.pop_back();
-    //        rotRecordType.pop_back();
-    //    //}
-    //}
-    ////==================================================================
-    ////==================================================================
-
-
-
-    ////==================================================================
-    ////==================================================================
-    //void rubiks::travelToStep(int finalStep )
-    //{
-    //    int currentStep = rotRecordFace.size();
-    //    while( currentStep < finalStep){
-    //        if( rotRecordFace.back() == FIRST_FACE){
-    //            pushRotStep( SEC_FACE, FIRST_ROT);
-    //        } else  {
-    //            pushRotStep( FIRST_FACE, FIRST_ROT);
-    //        }
-
-    //        ++currentStep;
-    //    }
-
-    //}
-    ////==================================================================
-    ////==================================================================
-
-
-    //
-
-
-    ////==================================================================
-    ////==================================================================
-    //bool rubiks::isLastRotInStep()
-    //{
-    //    bool isLastRotOfSet;
-    //    bool isLastRotByPreviousStep;
-    //    bool thisStepSecToLast;
-    //    bool prevFaceLast;
-    //    int secToLastRecInd = rotRecordFace.size() -2;
-
-    //    isLastRotOfSet = (rotRecordFace.back() == LAST_FACE)
-    //                &&   (rotRecordType.back() == LAST_ROT);
-
-    //    thisStepSecToLast = (rotRecordFace.back() == SEC_LAST_FACE)
-    //                   &&   (rotRecordType.back() == LAST_ROT);
-
-    //    prevFaceLast = (rotRecordFace[ secToLastRecInd ] == LAST_FACE);
-
-    //    return isLastRotOfSet || (thisStepSecToLast && prevFaceLast);
-
-    //    //return ((rotRecordFace.back() ==  && rotRecordType.back() == clock)
-    //    //|| ((rotRecordFace.back() == front && rotRecordType.back() == clock) 
-    //    //        && (rotRecordFace[ rotRecordFace.size() -2] == back)) );
-    //}
-    ////==================================================================
-    ////==================================================================
-
-
-
-    ////==================================================================
-    ////==================================================================
-    //void rubiks::moveToNextStep()
-    //{
-    //    Face currentRotFace = rotRecordFace.back();
-    //    Rot currentRot = rotRecordType.back();
-
-    //    //if( currentRotFace != emptyFace){
-    //        popRotStep();
-    //        if(currentRot == LAST_ROT){
-    //            inc( currentRotFace);
-    //            currentRot = FIRST_ROT;
-
-    //            if( currentRotFace == rotRecordFace.back()){
-    //                inc( currentRotFace);
-    //            }
-    //        } else {
-    //            inc(currentRot);
-    //        }
-    //    //} else {
-    //    //    currentRotFace = up;
-    //    //    currentRot = count;
-    //    //}
-    //    pushRotStep( currentRotFace, currentRot);
-    //}
-    ////==================================================================
-    ////==================================================================
-
     
     //==================================================================
     //==================================================================
@@ -1153,4 +831,219 @@ namespace PRETZEL
                              row,
                              PrintToCoord::alignLeft);
     }
+    //==================================================================
+    //==================================================================
+
+
+    //==================================================================
+    //==================================================================
+    void rubiks::recurseHighestValue(  int (rubiks::*valueFunc)(),
+                                        int stepsToTake,
+                                        int curStepNum,
+                                        std::vector<RotRecordType> &topRotRecs,
+                                        std::vector<int> &topValues,
+                                        int numRotRecsToKeep             )
+    {
+        int nextStepNum = curStepNum -1;
+        int value;
+        int i = 0;
+
+        if( stepsToTake == curStepNum){
+        //if last step go through the rotations running the valueFunction
+        // and checking against the topValues
+            
+            rotUcount();
+            recurseValueLastStep( (this->*valueFunc)(), up, count, topRotRecs, 
+                              topValues, numRotRecsToKeep);
+            rotUcount();
+            recurseValueLastStep( (this->*valueFunc)(), up, twice, topRotRecs, 
+                              topValues, numRotRecsToKeep);
+            rotUcount();
+            recurseValueLastStep( (this->*valueFunc)(), up, clock, topRotRecs, 
+                              topValues, numRotRecsToKeep);
+            rotUcount();
+
+            rotDcount();
+            recurseValueLastStep( (this->*valueFunc)(), down, count, 
+                                    topRotRecs, topValues, numRotRecsToKeep);
+            rotDcount();
+            recurseValueLastStep( (this->*valueFunc)(), down, twice, 
+                                    topRotRecs, topValues, numRotRecsToKeep);
+            rotDcount();
+            recurseValueLastStep( (this->*valueFunc)(), down, clock, 
+                                    topRotRecs, topValues, numRotRecsToKeep);
+            rotDcount();
+            rotLcount();
+            recurseValueLastStep( (this->*valueFunc)(), left, count, 
+                                    topRotRecs, topValues, numRotRecsToKeep);
+            rotLcount();
+            recurseValueLastStep( (this->*valueFunc)(), left, twice, 
+                                    topRotRecs, topValues, numRotRecsToKeep);
+            rotLcount();
+            recurseValueLastStep( (this->*valueFunc)(), left, clock, 
+                                    topRotRecs, topValues, numRotRecsToKeep);
+            rotLcount();
+            rotRcount();
+            recurseValueLastStep( (this->*valueFunc)(), right, count, 
+                                    topRotRecs, topValues, numRotRecsToKeep);
+            rotRcount();
+            recurseValueLastStep( (this->*valueFunc)(), right, twice, 
+                                    topRotRecs, topValues, numRotRecsToKeep);
+            rotRcount();
+            recurseValueLastStep( (this->*valueFunc)(), right, clock, 
+                                    topRotRecs, topValues, numRotRecsToKeep);
+            rotRcount();
+            rotFcount();
+            recurseValueLastStep( (this->*valueFunc)(), front, count, 
+                                    topRotRecs, topValues, numRotRecsToKeep);
+            rotFcount();
+            recurseValueLastStep( (this->*valueFunc)(), front, twice, 
+                                    topRotRecs, topValues, numRotRecsToKeep);
+            rotFcount();
+            recurseValueLastStep( (this->*valueFunc)(), front, clock, 
+                                    topRotRecs, topValues, numRotRecsToKeep);
+            rotFcount();
+            rotBcount();
+            recurseValueLastStep( (this->*valueFunc)(), back, count, 
+                                    topRotRecs, topValues, numRotRecsToKeep);
+            rotBcount();
+            recurseValueLastStep( (this->*valueFunc)(), back, twice, 
+                                    topRotRecs, topValues, numRotRecsToKeep);
+            rotBcount();
+            recurseValueLastStep( (this->*valueFunc)(), back, clock, 
+                                    topRotRecs, topValues, numRotRecsToKeep);
+            rotBcount();
+
+        } else {
+
+        //if not last step go through rotations and recursively call 
+        // this same function (same recursive cycle). If previous iteration
+        // rotated the same face then don't do that face.  At the end perform
+        // a value check for this current rotation
+
+            if( rotRecord.back().first != up){
+               recurseNextStep( &rubiks::rotUcount, up, valueFunc, 
+                                stepsToTake, nextStepNum, topRotRecs, 
+                                topValues, numRotRecsToKeep);
+            }
+
+            if( rotRecord.back().first != down){
+               recurseNextStep( &rubiks::rotDcount, down, valueFunc, 
+                                stepsToTake, nextStepNum, topRotRecs, 
+                                topValues, numRotRecsToKeep);
+            }
+
+            if( rotRecord.back().first != left){
+               recurseNextStep( &rubiks::rotLcount, left, valueFunc, 
+                                stepsToTake, nextStepNum, topRotRecs, 
+                                topValues, numRotRecsToKeep);
+            }
+
+            if( rotRecord.back().first != right){
+               recurseNextStep( &rubiks::rotRcount, right, valueFunc, 
+                                stepsToTake, nextStepNum, topRotRecs, 
+                                topValues, numRotRecsToKeep);
+            }
+
+            if( rotRecord.back().first != front){
+               recurseNextStep( &rubiks::rotFcount, front, valueFunc, 
+                                stepsToTake, nextStepNum, topRotRecs, 
+                                topValues, numRotRecsToKeep);
+            }
+
+            if( rotRecord.back().first != back){
+               recurseNextStep( &rubiks::rotBcount, back, valueFunc, 
+                                stepsToTake, nextStepNum, topRotRecs, 
+                                topValues, numRotRecsToKeep);
+            }
+
+            recurseValueCurStep( (this->*valueFunc)(), topRotRecs, 
+                                 topValues, numRotRecsToKeep);
+        }
+    }
+    //==================================================================
+    //==================================================================
+
+
+
+    //==================================================================
+    //==================================================================
+    void rubiks::recurseNextStep( void (rubiks::*rotFunc)(),
+                                  Face currentFace,
+                                  int (rubiks::*valueFunc)(),
+                                  int stepsToTake,
+                                  int curStepNum,
+                                  std::vector<RotRecordType> &topRotRecs,
+                                  std::vector<int> &topValues,
+                                  int numRotRecsToKeep)
+    {
+        pair<Face, Rot> firstRotation ( currentFace, count);
+        rotRecord.push_back( firstRotation);
+
+        (this->*rotFunc)();
+        recurseHighestValue( valueFunc, stepsToTake, curStepNum, 
+                             topRotRecs, topValues, numRotRecsToKeep);
+        rotRecord.back().second = twice;
+
+        (this->*rotFunc)();
+        recurseHighestValue( valueFunc, stepsToTake, curStepNum, 
+                             topRotRecs, topValues, numRotRecsToKeep);
+        rotRecord.back().second = clock;
+
+        (this->*rotFunc)();
+        recurseHighestValue( valueFunc, stepsToTake, curStepNum, 
+                             topRotRecs, topValues, numRotRecsToKeep);
+        rotRecord.pop_back();
+        (this->*rotFunc)();
+    }
+    //==================================================================
+    //==================================================================
+                                
+
+    //==================================================================
+    //==================================================================
+    void rubiks::recurseValueLastStep( int value,
+                                  Face curFace,
+                                  Rot  curRot,
+                                  std::vector<RotRecordType> &topRotRecs,
+                                  std::vector<int> &topValues,
+                                  int numRotRecsToKeep)
+    {
+        if( value > topValues.front()){
+            int i = 1;
+            while( (value > topValues[i]) && (i < numRotRecsToKeep)){
+                topValues[i-1] = topValues[i];
+                topRotRecs[i-1] = topRotRecs[i];
+                ++i;
+            }
+            topValues[i] = value;
+            topRotRecs[i] = rotRecord;
+            pair<Face, Rot> curRotPair(curFace, curRot);
+            topRotRecs[i].push_back( curRotPair);
+        }
+    }        
+    //==================================================================
+    //==================================================================
+
+
+    //==================================================================
+    //==================================================================
+    void rubiks::recurseValueCurStep( int value,
+                                  std::vector<RotRecordType> &topRotRecs,
+                                  std::vector<int> &topValues,
+                                  int numRotRecsToKeep)
+    {
+        if( value > topValues.front()){
+            int i = 1;
+            while( (value > topValues[i]) && (i < numRotRecsToKeep)){
+                topValues[i-1] = topValues[i];
+                topRotRecs[i-1] = topRotRecs[i];
+                ++i;
+            }
+            topValues[i] = value;
+            topRotRecs[i] = rotRecord;
+        }
+    }        
+    //==================================================================
+    //==================================================================
 }
