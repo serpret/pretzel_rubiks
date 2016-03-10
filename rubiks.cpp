@@ -53,26 +53,26 @@ namespace PRETZEL
 
         //initiate rotation function pointers 
         rotFuncPtr[up][count]       = &rubiks::rotUcount;
-        //rotFuncPtr[up][clock]       = &rubiks::rotUclock;
-        //rotFuncPtr[up][twice]       = &rubiks::rotUtwice;
-        //rotFuncPtr[down][count]     = &rubiks::rotDcount;
-        //rotFuncPtr[down][clock]     = &rubiks::rotDclock;
-        //rotFuncPtr[down][twice]     = &rubiks::rotDtwice;
-        //rotFuncPtr[left][count]     = &rubiks::rotLcount;
-        //rotFuncPtr[left][clock]     = &rubiks::rotLclock;
-        //rotFuncPtr[left][twice]     = &rubiks::rotLtwice;
+        rotFuncPtr[up][clock]       = &rubiks::rotUclock;
+        rotFuncPtr[up][twice]       = &rubiks::rotUtwice;
+        rotFuncPtr[down][count]     = &rubiks::rotDcount;
+        rotFuncPtr[down][clock]     = &rubiks::rotDclock;
+        rotFuncPtr[down][twice]     = &rubiks::rotDtwice;
+        rotFuncPtr[left][count]     = &rubiks::rotLcount;
+        rotFuncPtr[left][clock]     = &rubiks::rotLclock;
+        rotFuncPtr[left][twice]     = &rubiks::rotLtwice;
         rotFuncPtr[right][count]    = &rubiks::rotRcount;
-        //rotFuncPtr[right][clock]    = &rubiks::rotRclock;
-        //rotFuncPtr[right][twice]    = &rubiks::rotRtwice;
-        //rotFuncPtr[front][count]    = &rubiks::rotFcount;
-        //rotFuncPtr[front][clock]    = &rubiks::rotFclock;
-        //rotFuncPtr[front][twice]    = &rubiks::rotFtwice;
-        //rotFuncPtr[back][count]     = &rubiks::rotBcount;
-        //rotFuncPtr[back][clock]     = &rubiks::rotBclock;
-        //rotFuncPtr[back][twice]     = &rubiks::rotBtwice;
+        rotFuncPtr[right][clock]    = &rubiks::rotRclock;
+        rotFuncPtr[right][twice]    = &rubiks::rotRtwice;
+        rotFuncPtr[front][count]    = &rubiks::rotFcount;
+        rotFuncPtr[front][clock]    = &rubiks::rotFclock;
+        rotFuncPtr[front][twice]    = &rubiks::rotFtwice;
+        rotFuncPtr[back][count]     = &rubiks::rotBcount;
+        rotFuncPtr[back][clock]     = &rubiks::rotBclock;
+        rotFuncPtr[back][twice]     = &rubiks::rotBtwice;
+        rotFuncPtr[emptyFace][emptyRot] = &rubiks::noOp;
 
-        //rotRecord.push_back( emptyRotPair ); 
-        //rotRecord.push_back( emptyRotPair ); 
+        rotRecord.push_back( emptyRotPair ); 
         
         //==============================================
         for(int i = 0; i < NUM_CORNER_CUBES; ++i){
@@ -96,7 +96,6 @@ namespace PRETZEL
             edgeOrientSolutions[i] = edges[i].orient;
             
         }
-
 
         nextFaceXrotCount[up]    = front;
         nextFaceXrotCount[down]  = back;
@@ -454,6 +453,7 @@ namespace PRETZEL
     void rubiks::rotDtwice()
     {
         rotDcount();
+        rotDcount();
     }
     //==================================================================
     //==================================================================
@@ -627,27 +627,102 @@ namespace PRETZEL
     //==================================================================
 
 
+
+    //==================================================================
+    //==================================================================
+    void rubiks::pushRot( pair<Face, Rot> rotPair)
+    {
+        (this->*rotFuncPtr[ rotPair.first][ rotPair.second])();
+        rotRecord.push_back( pair<Face, Rot>(rotPair.first, rotPair.second ));
+    } 
+    //==================================================================
+    //==================================================================
+
+
+    //==================================================================
+    //==================================================================
+    void rubiks::pushRot( RotRecordType rotRecToAdd )
+    {
+        for(    auto iter = rotRecToAdd.begin(); 
+                iter != rotRecToAdd.end();
+                ++iter                          )
+        {
+            pushRot( *iter );
+        }
+    }
+    //==================================================================
+    //==================================================================
+
+
+
+    //==================================================================
+    //==================================================================
+    void rubiks::popRot()
+    {
+        Rot invRot;
+        switch( rotRecord.back().second)
+        {
+            case count: invRot = clock; break;
+            case twice: invRot = twice; break;
+            case clock: invRot = count; break;
+            default: break;
+        }
+        (this->*rotFuncPtr[ rotRecord.back().first][ invRot])();
+        rotRecord.pop_back();
+    }
+    //==================================================================
+    //==================================================================
+
+
+
+    //==================================================================
+    //==================================================================
+    void rubiks::popRot(int numPops)
+    {
+        for (int i = 0; i < numPops; ++i){ popRot(); }
+    }
+    //==================================================================
+    //==================================================================
+
+
+
     //==================================================================
     //==================================================================
     vector<pair<int,rubiks::RotRecordType>> 
         rubiks::findHighestValueRotRecs(int numRotRecsToKeep, int numSteps )
     {
+        vector<pair<int,RotRecordType>> highestValueRotRecs;
+        RotRecordType emptyRotRecord;
+        emptyRotRecord.push_back( pair<Face, Rot>(emptyFace, emptyRot));
         vector<RotRecordType> highestRotRecs;
         vector<int>           highestValues;
-        highestValues.resize(numRotRecsToKeep);
-        highestRotRecs.resize(numRotRecsToKeep);
+        highestValues.resize(numRotRecsToKeep, 0);
+        highestRotRecs.resize(numRotRecsToKeep, emptyRotRecord );
 
-        //pair<Face, Rot> emptyRot(emptyFace, emptyRot);
-        //pair<Face, Rot> firstRotation ( currentFace, currentRot);
-        //RotRecordType emptyRotRec(emptyRot);
-        recurseHighestValue( &rubiks::valueExactSolution,
+        tempRotRec.clear();
+        tempRotRec.push_back( pair<Face, Rot>(emptyFace, emptyRot));
+
+        recurseHighestValue( &rubiks::valuePositionOrient,
                              numSteps,
                              0,
                              highestRotRecs,
                              highestValues,
                              numRotRecsToKeep);
-        
-        
+
+        auto iterVal = highestValues.begin();
+        for( auto iterRot = highestRotRecs.begin(); 
+            iterRot != highestRotRecs.end();
+            ++iterRot)  
+        {
+            if( (*iterRot).front().first == emptyFace){
+                (*iterRot).erase( (*iterRot).begin());
+            }
+            highestValueRotRecs.push_back( 
+                                pair<int, RotRecordType>(*iterVal, *iterRot));
+            ++iterVal;
+        }
+
+        return highestValueRotRecs;
     }
     //==================================================================
     //==================================================================
@@ -657,23 +732,76 @@ namespace PRETZEL
     //==================================================================
     int rubiks::valueExactSolution()
     {
-        for(int i = 0; i < NUM_CORNER_CUBES; ++i)
-        {
+        for(int i = 0; i < NUM_CORNER_CUBES; ++i) {
             if( corners[i].cubeNum != i) return 0;
-            if( corners[i].orient != cornerOrientSolutions[i]) return 0;
         }
     
-        for(int i  = 0; i < NUM_EDGE_CUBES; ++i)
-        {
+        for(int i  = 0; i < NUM_EDGE_CUBES; ++i) {
             if( edges[i].cubeNum != i) return 0;
-            if( edges[i].orient != edgeOrientSolutions[i]) return 0;
         }
-        return 1;
+        
+        for(int i = 0; i < NUM_CORNER_CUBES; ++i) {
+            if( corners[i].orient != cornerOrientSolutions[i]) return 1;
+        }
+
+        for(int i  = 0; i < NUM_EDGE_CUBES; ++i) {
+            if( edges[i].orient != edgeOrientSolutions[i]) return 1;
+        }
+            
+        return 2;
     }
     //==================================================================
     //==================================================================
 
+
+
+    //==================================================================
+    //==================================================================
+    int rubiks::valuePositionOrient()
+    {
+        int value = 0;
+        for(int i = 0; i < NUM_CORNER_CUBES; ++i) {
+            if( corners[i].cubeNum == i){ 
+                value = value +2;
+                if(corners[i].orient == cornerOrientSolutions[i]) {
+                    value = value +1;
+                }
+            }
+        }
+
+        for(int i  = 0; i < NUM_EDGE_CUBES; ++i) {
+            if( edges[i].cubeNum == i) {
+                value = value +2;
+                if( edges[i].orient == edgeOrientSolutions[i]){
+                    value = value +1;
+                }
+            }
+        }
+        
+
+        return value;
+    }
+    //==================================================================
+    //==================================================================
     
+
+    //==================================================================
+    //==================================================================
+    void rubiks::scramble(int steps)
+    {
+        std::random_device rd;
+        std::mt19937 mt(rd());
+        std::uniform_int_distribution<> disFace(0,5); 
+        std::uniform_int_distribution<> disType(0,2); 
+
+        for(int i = 0; i < steps; ++i)
+        {
+            (this->*rotFuncPtr[disFace(mt)][disType(mt)])(); 
+        }
+
+    }
+    //==================================================================
+    //==================================================================
 
 
     //==================================================================
@@ -844,7 +972,7 @@ namespace PRETZEL
                                         std::vector<int> &topValues,
                                         int numRotRecsToKeep             )
     {
-        int nextStepNum = curStepNum -1;
+        int nextStepNum = curStepNum +1;
         int value;
         int i = 0;
 
@@ -852,6 +980,7 @@ namespace PRETZEL
         //if last step go through the rotations running the valueFunction
         // and checking against the topValues
             
+            if( tempRotRec.back().first != up){
             rotUcount();
             recurseValueLastStep( (this->*valueFunc)(), up, count, topRotRecs, 
                               topValues, numRotRecsToKeep);
@@ -862,7 +991,9 @@ namespace PRETZEL
             recurseValueLastStep( (this->*valueFunc)(), up, clock, topRotRecs, 
                               topValues, numRotRecsToKeep);
             rotUcount();
+            }
 
+            if( tempRotRec.back().first != down){
             rotDcount();
             recurseValueLastStep( (this->*valueFunc)(), down, count, 
                                     topRotRecs, topValues, numRotRecsToKeep);
@@ -873,6 +1004,9 @@ namespace PRETZEL
             recurseValueLastStep( (this->*valueFunc)(), down, clock, 
                                     topRotRecs, topValues, numRotRecsToKeep);
             rotDcount();
+            }
+
+            if( tempRotRec.back().first != left){
             rotLcount();
             recurseValueLastStep( (this->*valueFunc)(), left, count, 
                                     topRotRecs, topValues, numRotRecsToKeep);
@@ -883,6 +1017,9 @@ namespace PRETZEL
             recurseValueLastStep( (this->*valueFunc)(), left, clock, 
                                     topRotRecs, topValues, numRotRecsToKeep);
             rotLcount();
+            }
+
+            if( tempRotRec.back().first != right){
             rotRcount();
             recurseValueLastStep( (this->*valueFunc)(), right, count, 
                                     topRotRecs, topValues, numRotRecsToKeep);
@@ -893,6 +1030,8 @@ namespace PRETZEL
             recurseValueLastStep( (this->*valueFunc)(), right, clock, 
                                     topRotRecs, topValues, numRotRecsToKeep);
             rotRcount();
+            }
+            if( tempRotRec.back().first != front){
             rotFcount();
             recurseValueLastStep( (this->*valueFunc)(), front, count, 
                                     topRotRecs, topValues, numRotRecsToKeep);
@@ -903,6 +1042,8 @@ namespace PRETZEL
             recurseValueLastStep( (this->*valueFunc)(), front, clock, 
                                     topRotRecs, topValues, numRotRecsToKeep);
             rotFcount();
+            }
+            if( tempRotRec.back().first != back){
             rotBcount();
             recurseValueLastStep( (this->*valueFunc)(), back, count, 
                                     topRotRecs, topValues, numRotRecsToKeep);
@@ -913,6 +1054,10 @@ namespace PRETZEL
             recurseValueLastStep( (this->*valueFunc)(), back, clock, 
                                     topRotRecs, topValues, numRotRecsToKeep);
             rotBcount();
+            }
+
+            recurseValueCurStep( (this->*valueFunc)(), topRotRecs, 
+                                 topValues, numRotRecsToKeep);
 
         } else {
 
@@ -921,37 +1066,37 @@ namespace PRETZEL
         // rotated the same face then don't do that face.  At the end perform
         // a value check for this current rotation
 
-            if( rotRecord.back().first != up){
+            if( tempRotRec.back().first != up){
                recurseNextStep( &rubiks::rotUcount, up, valueFunc, 
                                 stepsToTake, nextStepNum, topRotRecs, 
                                 topValues, numRotRecsToKeep);
             }
 
-            if( rotRecord.back().first != down){
+            if( tempRotRec.back().first != down){
                recurseNextStep( &rubiks::rotDcount, down, valueFunc, 
                                 stepsToTake, nextStepNum, topRotRecs, 
                                 topValues, numRotRecsToKeep);
             }
 
-            if( rotRecord.back().first != left){
+            if( tempRotRec.back().first != left){
                recurseNextStep( &rubiks::rotLcount, left, valueFunc, 
                                 stepsToTake, nextStepNum, topRotRecs, 
                                 topValues, numRotRecsToKeep);
             }
 
-            if( rotRecord.back().first != right){
+            if( tempRotRec.back().first != right){
                recurseNextStep( &rubiks::rotRcount, right, valueFunc, 
                                 stepsToTake, nextStepNum, topRotRecs, 
                                 topValues, numRotRecsToKeep);
             }
 
-            if( rotRecord.back().first != front){
+            if( tempRotRec.back().first != front){
                recurseNextStep( &rubiks::rotFcount, front, valueFunc, 
                                 stepsToTake, nextStepNum, topRotRecs, 
                                 topValues, numRotRecsToKeep);
             }
 
-            if( rotRecord.back().first != back){
+            if( tempRotRec.back().first != back){
                recurseNextStep( &rubiks::rotBcount, back, valueFunc, 
                                 stepsToTake, nextStepNum, topRotRecs, 
                                 topValues, numRotRecsToKeep);
@@ -978,22 +1123,22 @@ namespace PRETZEL
                                   int numRotRecsToKeep)
     {
         pair<Face, Rot> firstRotation ( currentFace, count);
-        rotRecord.push_back( firstRotation);
+        tempRotRec.push_back( firstRotation);
 
         (this->*rotFunc)();
         recurseHighestValue( valueFunc, stepsToTake, curStepNum, 
                              topRotRecs, topValues, numRotRecsToKeep);
-        rotRecord.back().second = twice;
+        tempRotRec.back().second = twice;
 
         (this->*rotFunc)();
         recurseHighestValue( valueFunc, stepsToTake, curStepNum, 
                              topRotRecs, topValues, numRotRecsToKeep);
-        rotRecord.back().second = clock;
+        tempRotRec.back().second = clock;
 
         (this->*rotFunc)();
         recurseHighestValue( valueFunc, stepsToTake, curStepNum, 
                              topRotRecs, topValues, numRotRecsToKeep);
-        rotRecord.pop_back();
+        tempRotRec.pop_back();
         (this->*rotFunc)();
     }
     //==================================================================
@@ -1016,10 +1161,10 @@ namespace PRETZEL
                 topRotRecs[i-1] = topRotRecs[i];
                 ++i;
             }
-            topValues[i] = value;
-            topRotRecs[i] = rotRecord;
+            topValues[i-1] = value;
+            topRotRecs[i-1] = tempRotRec;
             pair<Face, Rot> curRotPair(curFace, curRot);
-            topRotRecs[i].push_back( curRotPair);
+            topRotRecs[i-1].push_back( curRotPair);
         }
     }        
     //==================================================================
@@ -1040,10 +1185,18 @@ namespace PRETZEL
                 topRotRecs[i-1] = topRotRecs[i];
                 ++i;
             }
-            topValues[i] = value;
-            topRotRecs[i] = rotRecord;
+            topValues[i-1] = value;
+            topRotRecs[i-1] = tempRotRec;
         }
     }        
+    //==================================================================
+    //==================================================================
+
+    //==================================================================
+    //==================================================================
+    void rubiks::noOp()
+    {
+    }
     //==================================================================
     //==================================================================
 }

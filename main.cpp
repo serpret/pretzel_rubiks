@@ -1,67 +1,62 @@
 #include <iostream>
 #include "rubiks.h++"
 #include <chrono>
+#include <vector>
+#include <string>
 
 using namespace PRETZEL;
+
+void followAndPrintRecord( rubiks&, rubiks::RotRecordType );
 
 int main()
 {
     rubiks r1;
     int j = 2; 
     int sum{0};
+    std::string clInput = "5";
+    std::vector<std::pair<int,rubiks::RotRecordType>> topRotRecords;
 
-    r1.print();
-    //r1.rotUcount();
-    //r1.rotUcount();
-    //r1.rotUcount();
-    //r1.rotUcount(); // tested ok
-    //r1.rotDcount();
-    //r1.rotDcount();
-    //r1.rotDcount();
-    //r1.rotDcount(); //tested ok
-    //r1.rotLcount();
-    //r1.rotLcount();
-    //r1.rotLcount();
-    //r1.rotLcount(); //tested ok
-    //r1.rotRcount();
-    //r1.rotRcount();
-    //r1.rotRcount();
-    //r1.rotRcount(); // tested ok
-    //r1.rotFcount(); 
-    //r1.rotFcount(); 
-    //r1.rotFcount(); 
-    //r1.rotFcount(); //tested ok
-    //r1.rotBcount();
-    //r1.rotBcount();
-    //r1.rotBcount();
-    //r1.rotBcount(); //tested ok
+
+    r1.rotBcount();
+    r1.rotLclock();
+    r1.rotLclock();
+    r1.rotRcount();
+    r1.rotDtwice();
+    r1.rotUclock();
+    r1.rotFclock();
+    r1.rotBtwice();
+    r1.rotUcount();
+    r1.scramble(30);
     r1.print();
 
     auto startTime = std::chrono::high_resolution_clock::now();
-
-    int numIterations = 10000000;
-    for( int i = 0; i < numIterations; ++i)
-    {
-        r1.rotUcount();
-        sum = sum + r1.returnCubeNumAtCorner(1);
-        r1.rotRcount();
-        sum = sum + r1.returnCubeNumAtCorner(1);
-        r1.rotUcount();
-        sum = sum + r1.returnCubeNumAtCorner(1);
-        r1.rotUcount();
-        sum = sum + r1.returnCubeNumAtCorner(1);
-        r1.rotRcount();
-        sum = sum + r1.returnCubeNumAtCorner(1);
-
-    }
     
+    while( clInput != "exit"){
+    topRotRecords = r1.findHighestValueRotRecs(7,std::stoi(clInput));
+    r1.pushRot( topRotRecords[6].second);
+    r1.print();
+    r1.printRecord();
+    std::cout << "Above value: " << topRotRecords[6].first << std::endl;
+    std::cout << "exit? " ;
+    std::cin >> clInput;
+    }
+
     auto elapsedTime = std::chrono::high_resolution_clock::now() - startTime;
+    r1.print(); 
     long long elapsedMilliSeconds = std::chrono::duration_cast<std::chrono::milliseconds>(elapsedTime).count();
-    std::cout << "Sum value: " << sum << std::endl;
+    followAndPrintRecord( r1, topRotRecords[6].second);
+    std::cout << "Above value: " << topRotRecords[6].first << std::endl;
     std::cout << "Elapsed milliseconds: " << elapsedMilliSeconds << std::endl;
 
 
-
-
     return EXIT_SUCCESS;
+}
+
+
+void followAndPrintRecord( rubiks& rubiksToPrint , rubiks::RotRecordType recordToFollow )
+{
+    rubiksToPrint.pushRot( recordToFollow );
+    rubiksToPrint.print();
+    rubiksToPrint.printRecord();
+    rubiksToPrint.popRot( recordToFollow.size() );
 }

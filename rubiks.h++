@@ -86,7 +86,13 @@
 //      postcondition: the rubiks cube will rotate the cubes correctly
 //                  according to the rotation that was performed.  For
 //                  example, rotUclock will rotate all of the cubes in
-//                  the "up" face clockwise. 
+//                  the "up" face clockwise. If any of these functions
+//                  are appended with a comment saying it is unoptimized
+//                  that means this function is actually implemented
+//                  as some combination of a different function and 
+//                  is therefore not as fast.  For example, a clockwise
+//                  rotation can be implemented a 3 counterclockwise
+//                  rotations.
 
 //void scramble(int numSteps)
 //      precondition: none
@@ -194,6 +200,11 @@ namespace PRETZEL
             void rotBtwice(); //this function is currently unoptimized
             void rotBclock(); //this function is currently unoptimized
 
+            void pushRot(std::pair<Face, Rot>);
+            void pushRot(RotRecordType);
+            void popRot();
+            void popRot(int);
+
             std::vector<std::pair<int,RotRecordType>> 
                 findHighestValueRotRecs( int numRotRecsToKeep, int numSteps);
 
@@ -205,6 +216,7 @@ namespace PRETZEL
                                       int numRotRecsToKeep);
 
             int valueExactSolution();
+            int valuePositionOrient();
 
             void scramble(int steps);
 
@@ -245,6 +257,7 @@ namespace PRETZEL
                                   std::vector<RotRecordType> &topRotRecs,
                                   std::vector<int> &topValues,
                                   int numRotRecsToKeep);
+            void noOp();
                                   
 
             Cube corners[NUM_CORNER_CUBES];
@@ -254,6 +267,7 @@ namespace PRETZEL
             Face edgeOrientSolutions[NUM_EDGE_CUBES];
 
             RotRecordType rotRecord;
+            RotRecordType tempRotRec;
 
     };
 }
